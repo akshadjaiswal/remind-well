@@ -10,8 +10,8 @@ export const reminderSchema = z.object({
     errorMap: () => ({ message: 'Invalid notification method' })
   }),
   message_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional().default('friendly'),
-  active_hours_start: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)').optional(),
-  active_hours_end: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)').optional(),
+  active_hours_start: z.union([z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)'), z.null()]).optional(),
+  active_hours_end: z.union([z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)'), z.null()]).optional(),
   skip_weekends: z.boolean().optional().default(false)
 }).refine(
   (data) => {

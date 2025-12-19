@@ -32,3 +32,17 @@ export const SUGGESTED_HABITS = [
   { emoji: '🧘', title: 'Stretch', interval: 60 },
   { emoji: '👀', title: 'Check posture', interval: 30 }
 ] as const;
+
+export const TIMEZONES = [
+  { value: 'UTC', label: 'UTC' },
+  { value: 'America/New_York', label: 'Eastern Time (ET)' },
+  { value: 'America/Chicago', label: 'Central Time (CT)' },
+  { value: 'America/Denver', label: 'Mountain Time (MT)' },
+  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+  { value: 'Europe/London', label: 'London (GMT)' },
+  { value: 'Europe/Paris', label: 'Paris (CET)' },
+  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+  { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
+  { value: 'Asia/Kolkata', label: 'India (IST)' },
+  { value: 'Australia/Sydney', label: 'Sydney (AEDT)' }
+] as const;

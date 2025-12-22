@@ -65,3 +65,17 @@ export async function deleteTelegramWebhook(): Promise<void> {
     throw new Error('Failed to delete webhook');
   }
 }
+
+/**
+ * Get current webhook information
+ * @returns Webhook info including URL, status, and pending updates
+ */
+export async function getTelegramWebhookInfo(): Promise<any> {
+  try {
+    const response = await axios.get(`${TELEGRAM_API_URL}/getWebhookInfo`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Get webhook info error:', error.message);
+    throw new Error('Failed to get webhook info');
+  }
+}

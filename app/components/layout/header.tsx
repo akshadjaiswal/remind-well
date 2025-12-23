@@ -24,7 +24,7 @@ export function Header() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useUser();
+  const { data: user } = useUser();
   const { clearUser } = useUserStore();
   const supabase = createClient();
 
@@ -101,7 +101,8 @@ export function Header() {
                 size="icon"
                 className="lg:hidden"
                 onClick={() => setMobileNavOpen(true)}
-                aria-label="Open menu"
+                aria-label="Open navigation menu"
+                aria-expanded={mobileNavOpen}
               >
                 <Menu className="h-5 w-5" />
               </Button>

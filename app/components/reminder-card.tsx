@@ -55,10 +55,14 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
   return (
     <Card
       className={cn(
-        'group hover:shadow-md transition-all duration-200 overflow-hidden',
+        'group hover:shadow-medium transition-all duration-200 overflow-hidden border-gray-200',
+        'hover:border-primary-200 hover:-translate-y-1',
         reminder.is_paused && 'opacity-60'
       )}
     >
+      {/* Gradient accent bar */}
+      <div className="h-1 bg-gradient-to-r from-primary-500 via-purple-500 to-primary-400" />
+
       <div className="p-6 space-y-4">
         {/* Header */}
         <div className="flex items-start justify-between">

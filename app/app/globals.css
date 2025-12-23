@@ -74,4 +74,35 @@
     outline: 2px solid rgb(139 92 246 / 0.5);
     outline-offset: 2px;
   }
+
+  /* Interactive elements */
+  .interactive-scale {
+    @apply transition-transform duration-200 active:scale-95;
+  }
+
+  .interactive-lift {
+    @apply transition-all duration-200 hover:-translate-y-0.5;
+  }
+
+  /* Enhanced card hover */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-medium hover:-translate-y-0.5;
+  }
+
+  /* Shimmer loading effect */
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s linear infinite;
+  }
 }

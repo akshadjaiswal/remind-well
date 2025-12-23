@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 const SUGGESTED_HABITS = [
   { emoji: '💧', title: 'Drink Water', interval: 60 },
@@ -20,36 +20,64 @@ export function EmptyState() {
   };
 
   return (
-    <div className="text-center py-12">
-      <div className="mb-8">
-        <span className="text-6xl">💧</span>
-        <h3 className="text-2xl font-bold mt-4 mb-2">No reminders yet</h3>
-        <p className="text-gray-500">
-          Create your first reminder to start building better habits
-        </p>
-      </div>
+    <div className="min-h-[60vh] flex items-center justify-center animate-fade-in">
+      <div className="max-w-3xl mx-auto text-center px-4">
+        {/* Illustration */}
+        <div className="mb-8">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary-50 mb-6">
+            <Sparkles className="h-12 w-12 text-primary-500" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            Start Building Better Habits
+          </h2>
+          <p className="text-lg text-gray-500 max-w-md mx-auto">
+            Create your first reminder and let RemindWell help you stay consistent with your goals
+          </p>
+        </div>
 
-      <Button onClick={handleCreateReminder} size="lg" className="mb-8">
-        <Plus className="mr-2 h-5 w-5" />
-        Add Your First Reminder
-      </Button>
+        {/* Primary CTA */}
+        <Button
+          onClick={handleCreateReminder}
+          size="lg"
+          className="bg-primary-500 hover:bg-primary-600 text-white shadow-sm mb-12 h-12 px-8"
+        >
+          <Plus className="mr-2 h-5 w-5" />
+          Create Your First Reminder
+        </Button>
 
-      <div className="max-w-2xl mx-auto">
-        <p className="text-sm text-gray-500 mb-4">Popular habits to track:</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {SUGGESTED_HABITS.map((habit) => (
-            <Card
-              key={habit.title}
-              className="cursor-pointer hover:border-blue-500 transition-colors"
-              onClick={handleCreateReminder}
-            >
-              <CardContent className="pt-6 pb-4 text-center">
-                <span className="text-3xl block mb-2">{habit.emoji}</span>
-                <p className="text-sm font-medium">{habit.title}</p>
-                <p className="text-xs text-gray-500">Every {habit.interval}m</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Suggested Habits */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-px w-12 bg-gray-200" />
+            <p className="text-sm font-medium text-gray-500">
+              Or start with a popular habit
+            </p>
+            <div className="h-px w-12 bg-gray-200" />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {SUGGESTED_HABITS.map((habit) => (
+              <Card
+                key={habit.title}
+                className="cursor-pointer hover:shadow-md hover:border-primary-200 transition-all duration-200 group"
+                onClick={handleCreateReminder}
+              >
+                <div className="p-6 text-center space-y-3">
+                  <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+                    {habit.emoji}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 mb-1">
+                      {habit.title}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Every {habit.interval} min
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </div>

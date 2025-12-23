@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Pencil, Trash2, Clock, Mail, MessageSquare } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +10,7 @@ import { useToggleReminder } from '@/hooks/use-reminders';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { Reminder } from '@/types/models';
 import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface ReminderCardProps {
   reminder: Reminder;
@@ -33,79 +33,103 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
     openDeleteModal(reminder.id);
   };
 
-  const getMethodBadge = () => {
+  const getMethodIcon = () => {
     if (reminder.notification_method === 'both') {
-      return <Badge variant="outline">Telegram & Email</Badge>;
+      return (
+        <div className="flex items-center gap-1">
+          <MessageSquare className="h-3.5 w-3.5" />
+          <Mail className="h-3.5 w-3.5" />
+        </div>
+      );
     }
     if (reminder.notification_method === 'telegram') {
-      return <Badge variant="outline">Telegram</Badge>;
+      return <MessageSquare className="h-3.5 w-3.5" />;
     }
-    return <Badge variant="outline">Email</Badge>;
+    return <Mail className="h-3.5 w-3.5" />;
   };
 
   const nextScheduledText = reminder.next_scheduled_at
-    ? `Next: ${formatDistanceToNow(new Date(reminder.next_scheduled_at), { addSuffix: true })}`
+    ? formatDistanceToNow(new Date(reminder.next_scheduled_at), { addSuffix: true })
     : 'Not scheduled';
 
   return (
-    <Card className={reminder.is_paused ? 'opacity-60' : ''}>
-      <CardHeader className="pb-3">
+    <Card
+      className={cn(
+        'group hover:shadow-md transition-all duration-200 overflow-hidden',
+        reminder.is_paused && 'opacity-60'
+      )}
+    >
+      <div className="p-6 space-y-4">
+        {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{reminder.emoji}</span>
-            <div>
-              <h3 className="font-semibold text-lg">{reminder.title}</h3>
-              <p className="text-sm text-gray-500">{reminder.frequencyText}</p>
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="text-4xl flex-shrink-0">{reminder.emoji}</div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg text-gray-900 truncate">
+                {reminder.title}
+              </h3>
+              <p className="text-sm text-gray-500 mt-0.5">{reminder.frequencyText}</p>
             </div>
           </div>
           <Switch
             checked={!reminder.is_paused}
             onCheckedChange={handleToggle}
             disabled={toggleMutation.isPending}
+            className="flex-shrink-0"
           />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
+
+        {/* Badges */}
         <div className="flex flex-wrap gap-2">
-          {getMethodBadge()}
-          <Badge variant="secondary" className="capitalize">
+          <Badge variant="secondary" className="text-xs font-medium">
+            {getMethodIcon()}
+            <span className="ml-1">
+              {reminder.notification_method === 'both'
+                ? 'Both'
+                : reminder.notification_method === 'telegram'
+                ? 'Telegram'
+                : 'Email'}
+            </span>
+          </Badge>
+          <Badge variant="secondary" className="text-xs font-medium capitalize">
             {reminder.message_tone}
           </Badge>
           {reminder.skip_weekends && (
-            <Badge variant="secondary">Skip weekends</Badge>
-          )}
-          {reminder.active_hours_start && reminder.active_hours_end && (
-            <Badge variant="secondary">
-              {reminder.active_hours_start} - {reminder.active_hours_end}
+            <Badge variant="secondary" className="text-xs font-medium">
+              No weekends
             </Badge>
           )}
         </div>
 
+        {/* Next Scheduled */}
         {!reminder.is_paused && (
-          <p className="text-xs text-gray-500">{nextScheduledText}</p>
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <Clock className="h-3.5 w-3.5" />
+            <span>{nextScheduledText}</span>
+          </div>
         )}
 
-        <div className="flex gap-2 pt-2">
+        {/* Actions */}
+        <div className="flex gap-2 pt-2 border-t border-gray-100">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleEdit}
-            className="flex-1"
+            className="flex-1 h-9"
           >
-            <Pencil className="h-4 w-4 mr-1" />
+            <Pencil className="h-4 w-4 mr-1.5" />
             Edit
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleDelete}
-            className="text-red-600 hover:text-red-700"
+            className="text-error-600 hover:text-error-700 hover:bg-error-50 h-9"
           >
-            <Trash2 className="h-4 w-4 mr-1" />
-            Delete
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

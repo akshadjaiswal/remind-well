@@ -15,16 +15,23 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { MobileNav } from './mobile-nav';
 import { useUser } from '@/hooks/use-user';
-import { signOut } from '@/lib/auth';
+import { useUserStore } from '@/lib/stores/user-store';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
+  const { clearUser } = useUserStore();
+  const supabase = createClient();
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
+    clearUser();
+    router.push('/');
   };
 
   const getInitials = (email: string) => {

@@ -70,37 +70,44 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-md w-full mx-4">
-        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-50 to-white px-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white p-8 sm:p-10 rounded-xl shadow-medium border border-gray-200">
+          {/* Header */}
           <div className="text-center mb-8">
-            <div className="text-4xl mb-4">💧</div>
-            <h1 className="text-3xl font-bold mb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
+              <span className="text-3xl">💧</span>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </h1>
             <p className="text-gray-600">
               {isSignUp
-                ? 'Sign up to start building healthy habits'
+                ? 'Start building healthy habits today'
                 : 'Sign in to manage your reminders'
               }
             </p>
           </div>
 
+          {/* Alerts */}
           {error && (
-            <Alert variant="destructive" className="mb-4">
+            <Alert variant="destructive" className="mb-6">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           {message && (
-            <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+            <Alert className="mb-6 bg-success-50 text-success-800 border-success-200">
               <AlertDescription>{message}</AlertDescription>
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                Email Address
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -109,11 +116,14 @@ export default function AuthPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="h-11"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -123,21 +133,28 @@ export default function AuthPage() {
                 required
                 minLength={6}
                 disabled={isLoading}
+                className="h-11"
               />
+              {isSignUp && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Minimum 6 characters required
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-11 bg-primary-500 hover:bg-primary-600 text-white font-medium shadow-sm"
               disabled={isLoading}
             >
               {isLoading
                 ? (isSignUp ? 'Creating account...' : 'Signing in...')
-                : (isSignUp ? 'Sign Up' : 'Sign In')
+                : (isSignUp ? 'Create Account' : 'Sign In')
               }
             </Button>
           </form>
 
+          {/* Toggle Sign Up/In */}
           <div className="mt-6 text-center">
             <button
               onClick={() => {
@@ -145,7 +162,7 @@ export default function AuthPage() {
                 setError('');
                 setMessage('');
               }}
-              className="text-sm text-blue-600 hover:text-blue-700"
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
               disabled={isLoading}
             >
               {isSignUp
@@ -155,9 +172,20 @@ export default function AuthPage() {
             </button>
           </div>
 
-          <p className="text-xs text-gray-500 text-center mt-6">
-            By continuing, you agree to receive reminder notifications
+          {/* Footer Note */}
+          <p className="text-xs text-gray-500 text-center mt-8 leading-relaxed">
+            By continuing, you agree to receive reminder notifications via email and Telegram
           </p>
+        </div>
+
+        {/* Back to Home Link */}
+        <div className="text-center mt-6">
+          <a
+            href="/"
+            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            ← Back to Home
+          </a>
         </div>
       </div>
     </div>

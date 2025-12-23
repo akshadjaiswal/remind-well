@@ -2,72 +2,73 @@
 // Consistent design values across the application
 
 export const colors = {
-  // Primary Colors
+  // Primary Colors - Purple/Indigo gradient theme
   primary: {
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6', // Main primary
-    600: '#2563EB', // Hover state
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
+    50: '#F5F3FF',
+    100: '#EDE9FE',
+    200: '#DDD6FE',
+    300: '#C4B5FD',
+    400: '#A78BFA',
+    500: '#8B5CF6', // Main primary - Vibrant purple
+    600: '#7C3AED', // Hover state
+    700: '#6D28D9',
+    800: '#5B21B6',
+    900: '#4C1D95',
   },
 
   // Accent Colors
   success: {
     50: '#ECFDF5',
     100: '#D1FAE5',
+    200: '#A7F3D0',
     500: '#10B981',
     600: '#059669',
     700: '#047857',
   },
 
   warning: {
-    50: '#FFFBEB',
-    100: '#FEF3C7',
+    50: '#FEF3C7',
+    100: '#FDE68A',
     500: '#F59E0B',
     600: '#D97706',
     700: '#B45309',
   },
 
   error: {
-    50: '#FEF2F2',
-    100: '#FEE2E2',
+    50: '#FEE2E2',
+    100: '#FECACA',
     500: '#EF4444',
     600: '#DC2626',
     700: '#B91C1C',
   },
 
   info: {
-    50: '#ECFEFF',
-    100: '#CFFAFE',
-    500: '#06B6D4',
-    600: '#0891B2',
-    700: '#0E7490',
+    50: '#E0F2FE',
+    100: '#BAE6FD',
+    500: '#0EA5E9',
+    600: '#0284C7',
+    700: '#0369A1',
   },
 
   // Neutral Colors
   gray: {
-    50: '#F9FAFB',
-    100: '#F3F4F6',
-    200: '#E5E7EB',
-    300: '#D1D5DB',
-    400: '#9CA3AF',
-    500: '#6B7280',
-    600: '#4B5563',
-    700: '#374151',
-    800: '#1F2937',
-    900: '#111827',
+    50: '#FAFAFA',
+    100: '#F4F4F5',
+    200: '#E4E4E7',
+    300: '#D4D4D8',
+    400: '#A1A1AA',
+    500: '#71717A',
+    600: '#52525B',
+    700: '#3F3F46',
+    800: '#27272A',
+    900: '#18181B',
   },
 
   // Semantic Colors
   background: '#FFFFFF',
-  foreground: '#111827',
-  muted: '#F9FAFB',
-  border: '#E5E7EB',
+  foreground: '#18181B',
+  muted: '#FAFAFA',
+  border: '#E4E4E7',
 } as const;
 
 export const typography = {

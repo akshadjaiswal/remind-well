@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { X, LayoutDashboard, Bell, Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { signOut } from '@/lib/auth';
 import { useUser } from '@/hooks/use-user';
+import { useUserStore } from '@/lib/stores/user-store';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 interface MobileNavProps {
@@ -16,7 +18,10 @@ interface MobileNavProps {
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
+  const { clearUser } = useUserStore();
+  const supabase = createClient();
 
   // Close on route change
   useEffect(() => {
@@ -36,7 +41,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   }, [isOpen]);
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
+    clearUser();
+    router.push('/');
     onClose();
   };
 

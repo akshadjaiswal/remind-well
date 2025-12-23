@@ -1,50 +1,59 @@
 import Link from 'next/link';
-import { Droplet, Github, Twitter, Linkedin } from 'lucide-react';
+import { Droplet, Github, Linkedin } from 'lucide-react';
+
+// Custom X (Twitter) SVG icon
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto">
+    <footer className="bg-gradient-to-b from-gray-50 to-white border-t border-gray-200 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 group">
-              <Droplet className="h-6 w-6 text-primary-500 group-hover:text-primary-600 transition-colors" />
-              <span className="text-lg font-semibold text-gray-900">RemindWell</span>
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 group-hover:from-primary-600 group-hover:to-primary-700 transition-all shadow-sm">
+                <Droplet className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">RemindWell</span>
             </Link>
-            <p className="text-sm text-gray-500 leading-relaxed">
-              Smart reminders to keep you hydrated, healthy, and on track with your goals.
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Smart AI-powered reminders to keep you hydrated, healthy, and on track with your goals.
             </p>
             {/* Social Links */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <a
-                href="https://github.com"
+                href="https://github.com/akshadjaiswal"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all"
                 aria-label="GitHub"
               >
-                <Github className="h-5 w-5" />
+                <Github className="h-4 w-4" />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com/akshad_999"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Twitter"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all"
+                aria-label="X (Twitter)"
               >
-                <Twitter className="h-5 w-5" />
+                <XIcon className="h-4 w-4" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://linkedin.com/in/akshadsantoshjaiswal"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-all"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="h-5 w-5" />
+                <Linkedin className="h-4 w-4" />
               </a>
             </div>
           </div>

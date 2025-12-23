@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 import { DeleteConfirmationModal } from '@/components/delete-confirmation-modal';
 import { Toaster } from '@/components/ui/toaster';
 import { SkeletonCard } from '@/components/ui/skeleton';
@@ -25,9 +24,9 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
@@ -42,18 +41,16 @@ export default function DashboardLayout({
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/20 to-purple-50/20">
       <Header />
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
-      <Footer />
       <DeleteConfirmationModal />
       <Toaster />
     </div>

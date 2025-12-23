@@ -74,8 +74,8 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity lg:hidden',
-          isOpen ? 'opacity-100 z-[100]' : 'opacity-0 pointer-events-none -z-10'
+          'fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden',
+          isOpen ? 'opacity-100 z-mobile-nav-backdrop' : 'opacity-0 pointer-events-none z-0'
         )}
         onClick={onClose}
         aria-hidden="true"
@@ -85,8 +85,11 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       <div
         className={cn(
           'fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-large transform transition-transform duration-300 ease-out lg:hidden',
-          isOpen ? 'translate-x-0 z-[110]' : '-translate-x-full -z-10'
+          isOpen ? 'translate-x-0 z-mobile-nav' : '-translate-x-full z-0'
         )}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">

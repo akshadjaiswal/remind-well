@@ -18,9 +18,17 @@ export function DeleteConfirmationModal() {
   const deleteMutation = useDeleteReminder();
 
   const handleConfirm = async () => {
-    if (reminderToDelete) {
+    if (!reminderToDelete) {
+      console.error('No reminder ID to delete');
+      return;
+    }
+
+    try {
       await deleteMutation.mutateAsync(reminderToDelete);
       closeDeleteModal();
+    } catch (error) {
+      console.error('Delete error:', error);
+      // Modal will stay open on error, mutation hook will show toast
     }
   };
 

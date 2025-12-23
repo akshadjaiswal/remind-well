@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { Info, Bell, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -88,38 +89,78 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
+  const mutation = mode === 'create' ? createMutation : updateMutation;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+      {/* Visual Progress Steps */}
+      <div className="mb-8 flex items-center justify-between max-w-2xl mx-auto px-4">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
+            1
+          </div>
+          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Basics</span>
+        </div>
+        <div className="flex-1 h-0.5 bg-gray-200 mx-2 sm:mx-4" />
+
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
+            2
+          </div>
+          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Notifications</span>
+        </div>
+        <div className="flex-1 h-0.5 bg-gray-200 mx-2 sm:mx-4" />
+
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
+            3
+          </div>
+          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Schedule</span>
+        </div>
+      </div>
+
+      {/* Card 1: Basic Information */}
+      <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-all duration-200">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-primary-50/50 via-purple-50/30 to-transparent pb-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center shadow-sm">
+              <Info className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-xl font-semibold text-gray-900">Basic Information</CardTitle>
+              <p className="text-xs text-gray-500 mt-0.5">Set up your reminder title and frequency</p>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 pt-6">
           <div className="space-y-2">
-            <Label htmlFor="title">
-              Reminder Title <span className="text-red-500">*</span>
+            <Label htmlFor="title" className="text-sm font-medium text-gray-700">
+              Reminder Title <span className="text-error-500">*</span>
             </Label>
             <Input
               id="title"
+              type="text"
               placeholder="e.g., Drink water, Take a break"
+              className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors"
               {...register('title', { required: true })}
             />
             {errors.title && (
-              <p className="text-sm text-red-500">Title is required</p>
+              <p className="text-sm text-error-500">Title is required</p>
             )}
           </div>
 
           <EmojiPicker value={emoji} onChange={setEmoji} />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="frequency-value">
-                Frequency <span className="text-red-500">*</span>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="col-span-2 space-y-2">
+              <Label htmlFor="frequency-value" className="text-sm font-medium text-gray-700">
+                Frequency <span className="text-error-500">*</span>
               </Label>
               <Input
                 id="frequency-value"
                 type="number"
+                placeholder="Enter frequency"
+                className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors"
                 min={frequencyUnit === 'minutes' ? '15' : '1'}
                 max={frequencyUnit === 'minutes' ? '1440' : '24'}
                 value={frequencyValue}
@@ -128,9 +169,9 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="frequency-unit">Unit</Label>
+              <Label htmlFor="frequency-unit" className="text-sm font-medium text-gray-700">Unit</Label>
               <Select value={frequencyUnit} onValueChange={(v) => setFrequencyUnit(v as any)}>
-                <SelectTrigger id="frequency-unit">
+                <SelectTrigger id="frequency-unit" className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,15 +184,24 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Notification Settings</CardTitle>
+      {/* Card 2: Notification Settings */}
+      <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-all duration-200">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-success-50/50 via-emerald-50/30 to-transparent pb-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-success-500 to-success-600 text-white flex items-center justify-center shadow-sm">
+              <Bell className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-xl font-semibold text-gray-900">Notification Settings</CardTitle>
+              <p className="text-xs text-gray-500 mt-0.5">Choose how and when to receive reminders</p>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 pt-6">
           <div className="space-y-2">
-            <Label htmlFor="notification-method">Notification Method</Label>
+            <Label htmlFor="notification-method" className="text-sm font-medium text-gray-700">Notification Method</Label>
             <Select value={notificationMethod} onValueChange={(v) => setNotificationMethod(v as any)}>
-              <SelectTrigger id="notification-method">
+              <SelectTrigger id="notification-method" className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -163,9 +213,9 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message-tone">Message Tone</Label>
+            <Label htmlFor="message-tone" className="text-sm font-medium text-gray-700">Message Tone</Label>
             <Select value={messageTone} onValueChange={(v) => setMessageTone(v as any)}>
-              <SelectTrigger id="message-tone">
+              <SelectTrigger id="message-tone" className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -179,18 +229,27 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Schedule Options</CardTitle>
+      {/* Card 3: Schedule Options */}
+      <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-all duration-200">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-info-50/50 via-sky-50/30 to-transparent pb-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-info-500 to-info-600 text-white flex items-center justify-center shadow-sm">
+              <Calendar className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-xl font-semibold text-gray-900">Schedule Options</CardTitle>
+              <p className="text-xs text-gray-500 mt-0.5">Customize when reminders are active</p>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 pt-6">
           <div className="flex items-center space-x-2">
             <Checkbox
               id="use-active-hours"
               checked={useActiveHours}
               onCheckedChange={(checked) => setUseActiveHours(checked as boolean)}
             />
-            <Label htmlFor="use-active-hours" className="cursor-pointer">
+            <Label htmlFor="use-active-hours" className="cursor-pointer text-sm text-gray-700">
               Set active hours (only send reminders during specific times)
             </Label>
           </div>
@@ -218,25 +277,31 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
               checked={skipWeekends}
               onCheckedChange={(checked) => setSkipWeekends(checked as boolean)}
             />
-            <Label htmlFor="skip-weekends" className="cursor-pointer">
+            <Label htmlFor="skip-weekends" className="cursor-pointer text-sm text-gray-700">
               Skip weekends (no reminders on Saturday and Sunday)
             </Label>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex gap-4">
+      {/* Action Buttons */}
+      <div className="flex flex-col-reverse sm:flex-row gap-3 pt-6 border-t border-gray-200">
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          className="flex-1"
+          className="flex-1 sm:flex-initial sm:min-w-[140px] h-11 hover:bg-gray-50"
           disabled={isPending}
         >
           Cancel
         </Button>
-        <Button type="submit" className="flex-1" disabled={isPending}>
-          {isPending ? 'Saving...' : mode === 'create' ? 'Create Reminder' : 'Save Changes'}
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
+          loading={mutation.isPending}
+          className="flex-1 sm:flex-initial sm:min-w-[140px] h-11 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-sm"
+        >
+          {mutation.isPending ? (mode === 'create' ? 'Creating...' : 'Updating...') : (mode === 'create' ? 'Create Reminder' : 'Update Reminder')}
         </Button>
       </div>
     </form>

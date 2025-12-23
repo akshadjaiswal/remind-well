@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Bell, Settings as SettingsIcon, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -46,25 +47,31 @@ export default function SettingsPage() {
       </div>
 
       {/* Notification Channels Section */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100 pb-4">
-          <CardTitle className="text-xl font-semibold text-gray-900">
-            Notification Channels
-          </CardTitle>
-          <p className="text-sm text-gray-500 mt-1">
-            Connect your preferred notification methods
-          </p>
+      <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-shadow">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-transparent">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center">
+              <Bell className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-semibold text-gray-900">
+                Notification Channels
+              </CardTitle>
+              <p className="text-sm text-gray-500 mt-1">
+                Connect your preferred notification methods
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           {/* Email */}
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Label className="text-base font-medium text-gray-900">Email</Label>
-              </div>
-              <p className="text-sm text-gray-600">{user?.email}</p>
+              <Label className="text-base font-medium text-gray-900">Email</Label>
+              <p className="text-sm text-gray-600 mt-0.5">{user?.email}</p>
             </div>
-            <Badge className="bg-success-50 text-success-700 border-success-200 hover:bg-success-50">
+            <Badge className="bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
+              <Check className="h-3 w-3 mr-1" />
               Verified
             </Badge>
           </div>
@@ -72,28 +79,21 @@ export default function SettingsPage() {
           {/* Telegram */}
           <div className="flex items-center justify-between pt-6 border-t border-gray-100">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Label className="text-base font-medium text-gray-900">Telegram</Label>
-              </div>
-              {hasTelegram ? (
-                <p className="text-sm text-gray-600">
-                  @{user?.telegram_username || 'Connected'}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-600">
-                  Connect to receive reminders via Telegram
-                </p>
-              )}
+              <Label className="text-base font-medium text-gray-900">Telegram</Label>
+              <p className="text-sm text-gray-600 mt-0.5">
+                {hasTelegram ? `@${user?.telegram_username || 'Connected'}` : 'Connect to receive reminders via Telegram'}
+              </p>
             </div>
             {hasTelegram ? (
-              <Badge className="bg-success-50 text-success-700 border-success-200 hover:bg-success-50">
+              <Badge className="bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
+                <Check className="h-3 w-3 mr-1" />
                 Connected
               </Badge>
             ) : (
               <Button
                 onClick={() => setShowTelegramModal(true)}
                 size="sm"
-                className="bg-primary-500 hover:bg-primary-600 text-white"
+                className="bg-primary-500 hover:bg-primary-600 text-white h-9 shadow-sm"
               >
                 Connect
               </Button>
@@ -103,14 +103,21 @@ export default function SettingsPage() {
       </Card>
 
       {/* Preferences Section */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100 pb-4">
-          <CardTitle className="text-xl font-semibold text-gray-900">
-            Preferences
-          </CardTitle>
-          <p className="text-sm text-gray-500 mt-1">
-            Customize your reminder settings
-          </p>
+      <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-shadow">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-transparent">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-info-100 text-info-700 flex items-center justify-center">
+              <SettingsIcon className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-xl font-semibold text-gray-900">
+                Preferences
+              </CardTitle>
+              <p className="text-sm text-gray-500 mt-1">
+                Customize your reminder settings
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           {/* Timezone */}
@@ -122,7 +129,7 @@ export default function SettingsPage() {
               All reminders will be scheduled according to this timezone
             </p>
             <Select value={timezone} onValueChange={setTimezone}>
-              <SelectTrigger id="timezone" className="h-11">
+              <SelectTrigger id="timezone" className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -144,7 +151,7 @@ export default function SettingsPage() {
               Choose the tone for AI-generated reminder messages
             </p>
             <Select value={defaultTone} onValueChange={(v) => setDefaultTone(v as any)}>
-              <SelectTrigger id="default-tone" className="h-11">
+              <SelectTrigger id="default-tone" className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -162,7 +169,8 @@ export default function SettingsPage() {
               <Button
                 onClick={handleSave}
                 disabled={updateUserMutation.isPending}
-                className="w-full sm:w-auto bg-primary-500 hover:bg-primary-600 text-white h-11 px-8"
+                loading={updateUserMutation.isPending}
+                className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white h-11 px-8 shadow-sm"
               >
                 {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>

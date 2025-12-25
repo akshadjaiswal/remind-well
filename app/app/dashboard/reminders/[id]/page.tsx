@@ -14,7 +14,7 @@ export default function EditReminderPage({ params }: { params: Promise<{ id: str
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="text-4xl mb-4">💧</div>
+          <div className="text-4xl mb-4 animate-pulse">🔔</div>
           <p className="text-gray-500">Loading reminder...</p>
         </div>
       </div>

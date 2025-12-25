@@ -46,7 +46,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
             <Sparkles className="ml-auto h-4 w-4 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               <Sparkles className="h-5 w-5 text-primary-500" />

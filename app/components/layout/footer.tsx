@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Droplet, Github, Linkedin } from 'lucide-react';
+import { BellRing, Github, Linkedin } from 'lucide-react';
 
 // Custom X (Twitter) SVG icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -19,12 +19,12 @@ export function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 group-hover:from-primary-600 group-hover:to-primary-700 transition-all shadow-sm">
-                <Droplet className="h-5 w-5 text-white" />
+                <BellRing className="h-5 w-5 text-white" />
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">RemindWell</span>
             </Link>
             <p className="text-sm text-gray-600 leading-relaxed">
-              Smart AI-powered reminders to keep you hydrated, healthy, and on track with your goals.
+              Stay consistent with your goals through smart, personalized reminders that help you build better habits.
             </p>
             {/* Social Links */}
             <div className="flex items-center gap-3">

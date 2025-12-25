@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2, Clock, Mail, MessageSquare } from 'lucide-react';
+import { Pencil, Trash2, Clock, Mail, MessageSquare, Pause, Play } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -75,12 +75,28 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
               <p className="text-sm text-gray-500 mt-0.5">{reminder.frequencyText}</p>
             </div>
           </div>
-          <Switch
-            checked={!reminder.is_paused}
-            onCheckedChange={handleToggle}
+          <Button
+            variant={reminder.is_paused ? "outline" : "secondary"}
+            size="sm"
+            onClick={handleToggle}
             disabled={toggleMutation.isPending}
-            className="flex-shrink-0"
-          />
+            className={cn(
+              "flex items-center gap-2 flex-shrink-0",
+              reminder.is_paused && "border-primary-300 text-primary-700 hover:bg-primary-50"
+            )}
+          >
+            {reminder.is_paused ? (
+              <>
+                <Play className="h-4 w-4" />
+                Resume
+              </>
+            ) : (
+              <>
+                <Pause className="h-4 w-4" />
+                Pause
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Badges */}

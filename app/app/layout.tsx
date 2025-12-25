@@ -6,8 +6,13 @@ const inter = Inter({ subsets: ['latin'], weight: ['300', '400', '500', '600'] }
 import { QueryProvider } from '@/lib/query-provider'
 
 export const metadata: Metadata = {
-  title: 'app',
-  description: 'Built with DevStart CLI',
+  title: 'RemindWell - Stay Consistent with Your Goals',
+  description: 'A beautiful reminder and habit tracking app to help you build better habits and stay consistent with your goals.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+  },
 }
 
 export default function RootLayout({

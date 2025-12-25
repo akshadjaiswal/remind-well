@@ -76,7 +76,7 @@ export default function AuthPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
-              <span className="text-3xl">💧</span>
+              <span className="text-3xl">🔔</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignUp ? 'Create Account' : 'Welcome Back'}

@@ -47,7 +47,7 @@ export function DeleteConfirmationModal() {
             This action cannot be undone. All notification history for this reminder will be permanently deleted.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-center gap-2 sm:gap-3">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
           <Button
             variant="outline"
             onClick={closeDeleteModal}

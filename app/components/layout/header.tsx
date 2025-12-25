@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Droplet, LayoutDashboard, Bell, Settings as SettingsIcon, LogOut } from 'lucide-react';
+import { Menu, BellRing, LayoutDashboard, Bell, Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -64,7 +64,7 @@ export function Header() {
             {/* Logo */}
             <div className="flex items-center gap-8">
               <Link href="/dashboard" className="flex items-center gap-2 group">
-                <Droplet className="h-6 w-6 text-primary-500 group-hover:text-primary-600 transition-colors" />
+                <BellRing className="h-6 w-6 text-primary-500 group-hover:text-primary-600 transition-colors" />
                 <span className="text-xl font-bold text-gray-900 hidden sm:inline">RemindWell</span>
               </Link>
 

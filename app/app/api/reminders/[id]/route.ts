@@ -10,9 +10,10 @@ import { timeToDatabase } from '@/lib/formatting';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -23,7 +24,7 @@ export async function GET(
     const { data: reminder, error } = await supabase
       .from('rw_reminders')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id)
       .single();
 
@@ -45,9 +46,10 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -76,7 +78,7 @@ export async function PATCH(
       const { data: currentReminder } = await supabase
         .from('rw_reminders')
         .select('interval_minutes, active_hours_start, active_hours_end, skip_weekends')
-        .eq('id', params.id)
+        .eq('id', id)
         .eq('user_id', user.id)
         .single();
 
@@ -103,7 +105,7 @@ export async function PATCH(
     const { data: reminder, error } = await supabase
       .from('rw_reminders')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id)
       .select()
       .single();
@@ -122,9 +124,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -135,7 +138,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('rw_reminders')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id);
 
     if (error) throw error;

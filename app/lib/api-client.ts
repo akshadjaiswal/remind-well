@@ -9,7 +9,8 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 30000 // 30 seconds
+  timeout: 30000, // 30 seconds
+  withCredentials: true // Include cookies for Supabase auth
 });
 
 // Request interceptor for adding auth tokens if needed

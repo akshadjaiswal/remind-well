@@ -96,10 +96,9 @@ export function Header() {
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
               {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden relative z-50"
+              <button
+                type="button"
+                className="lg:hidden relative z-50 p-2 rounded-md hover:bg-gray-100 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -110,7 +109,7 @@ export function Header() {
                 aria-expanded={mobileNavOpen}
               >
                 <Menu className="h-5 w-5" />
-              </Button>
+              </button>
 
               {/* User Dropdown (Desktop) */}
               {user && (

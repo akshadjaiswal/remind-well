@@ -23,10 +23,16 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const { clearUser } = useUserStore();
   const supabase = createClient();
 
+  // Debug logging
+  useEffect(() => {
+    console.log('MobileNav isOpen state changed:', isOpen);
+  }, [isOpen]);
+
   // Close on route change
   useEffect(() => {
     onClose();
-  }, [pathname, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // Prevent body scroll when open
   useEffect(() => {

@@ -5,9 +5,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -19,7 +20,7 @@ export async function POST(
     const { data: current } = await supabase
       .from('rw_reminders')
       .select('is_paused')
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id)
       .single();
 
@@ -31,7 +32,7 @@ export async function POST(
     const { data: reminder, error } = await supabase
       .from('rw_reminders')
       .update({ is_paused: !current.is_paused })
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('user_id', user.id)
       .select()
       .single();

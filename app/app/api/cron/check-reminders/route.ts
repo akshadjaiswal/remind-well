@@ -1,5 +1,5 @@
-// CRITICAL API: POST /api/cron/check-reminders
-// This is the heart of RemindWell - runs every minute via Vercel Cron
+// CRITICAL API: GET/POST /api/cron/check-reminders
+// This is the heart of RemindWell - runs every minute via EasyCron
 
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
@@ -16,12 +16,25 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+export async function GET(request: Request) {
+  return handleCronJob(request);
+}
+
 export async function POST(request: Request) {
+  return handleCronJob(request);
+}
+
+async function handleCronJob(request: Request) {
   try {
     // Verify cron secret
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (token !== process.env.CRON_SECRET) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
     const now = new Date();

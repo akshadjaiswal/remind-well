@@ -14,6 +14,16 @@ const toneDescriptions: Record<MessageTone, string> = {
   funny: 'humorous and playful'
 };
 
+function getToneInstructions(tone: MessageTone): string {
+  const instructions = {
+    motivational: 'Include WHY this matters and provide encouragement. Use empowering language that inspires action.',
+    friendly: 'Use warm, conversational language. Make it personal and relatable, like a friend checking in.',
+    direct: 'Be clear and actionable. Give a specific call-to-action without fluff.',
+    funny: 'Add humor or playfulness while still being effective. Use clever wordplay or light jokes.'
+  };
+  return instructions[tone];
+}
+
 /**
  * Generate an AI-powered reminder message
  * @param title - Reminder title (e.g., "Drink water")
@@ -31,10 +41,16 @@ export async function generateReminderMessage(
     : 'This is a reminder.';
 
   const prompt = `Generate a ${toneDescriptions[tone]} reminder message for "${title}".
-Keep it under 15 words.
-${contextPart}
-Make it contextual and include a relevant emoji.
-Return only the message text, no quotes or extra formatting.`;
+
+Guidelines:
+- Length: 20-30 words
+- ${getToneInstructions(tone)}
+- ${contextPart}
+- Include 1-2 relevant emojis
+- Make it actionable and specific
+- Return only the message text, no quotes or extra formatting
+
+Generate the reminder message now:`;
 
   try {
     const chatCompletion = await groq.chat.completions.create({
@@ -44,9 +60,9 @@ Return only the message text, no quotes or extra formatting.`;
           content: prompt
         }
       ],
-      model: 'llama-3.1-70b-versatile',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.8,
-      max_tokens: 50
+      max_tokens: 100
     });
 
     const message = chatCompletion.choices[0]?.message?.content?.trim();

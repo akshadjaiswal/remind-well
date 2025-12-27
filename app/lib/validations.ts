@@ -40,6 +40,7 @@ export const telegramWebhookSchema = z.object({
     message_id: z.number(),
     from: z.object({
       id: z.number(),
+      first_name: z.string(),
       username: z.string().optional()
     }),
     chat: z.object({

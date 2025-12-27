@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     const chatId = validated.message.chat.id.toString();
-    const username = validated.message.from.username;
+    const username = validated.message.from.username || validated.message.from.first_name;
     const text = validated.message.text;
 
     // Handle /start command

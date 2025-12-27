@@ -17,9 +17,15 @@ export async function sendEmail(
   message: string
 ): Promise<{ id: string }> {
   try {
+    // In development, Resend only allows sending to the account owner's email
+    // Use the development email override if in development mode
+    const recipientEmail = process.env.NODE_ENV === 'development'
+      ? (process.env.RESEND_DEV_EMAIL || to)
+      : to;
+
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'RemindWell <reminders@resend.dev>',
-      to: [to],
+      to: [recipientEmail],
       subject,
       html: generateEmailTemplate(subject, message)
     });

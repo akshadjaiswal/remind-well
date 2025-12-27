@@ -27,6 +27,8 @@ export const reminderSchema = z.object({
 export const updateUserSchema = z.object({
   telegram_chat_id: z.string().optional(),
   telegram_username: z.string().optional(),
+  telegram_connect_token: z.string().nullable().optional(),
+  telegram_connect_token_expires_at: z.string().nullable().optional(),
   default_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional(),
   timezone: z.string().optional(),
   onboarding_completed: z.boolean().optional()

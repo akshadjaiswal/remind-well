@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Send, Check, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useUser } from '@/hooks/use-user';
+import { useUser, useUpdateUser } from '@/hooks/use-user';
 import { useToast } from '@/hooks/use-toast';
 import { apiClient } from '@/lib/api-client';
 
@@ -15,14 +15,48 @@ interface TelegramStepProps {
 
 export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
   const { data: user, refetch } = useUser({ refetchInterval: false });
+  const updateUser = useUpdateUser();
   const { toast } = useToast();
   const [isChecking, setIsChecking] = useState(false);
   const [testSent, setTestSent] = useState(false);
   const [isSendingTest, setIsSendingTest] = useState(false);
+  const [connectToken, setConnectToken] = useState<string | null>(null);
 
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'your_bot';
-  const botLink = `https://t.me/${botUsername}`;
   const isConnected = !!user?.telegram_chat_id;
+
+  // Generate token on mount
+  useEffect(() => {
+    async function setupToken() {
+      if (user && !user.telegram_chat_id) {
+        // Only generate if not already connected
+        if (!user.telegram_connect_token) {
+          // Generate new token
+          const token = crypto.randomUUID();
+          const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+          try {
+            await updateUser.mutateAsync({
+              telegram_connect_token: token,
+              telegram_connect_token_expires_at: expiresAt
+            });
+            setConnectToken(token);
+          } catch (error) {
+            console.error('Failed to generate token:', error);
+          }
+        } else {
+          // Use existing token
+          setConnectToken(user.telegram_connect_token);
+        }
+      }
+    }
+
+    setupToken();
+  }, [user?.id, user?.telegram_chat_id]);
+
+  const botLink = connectToken
+    ? `https://t.me/${botUsername}?start=${connectToken}`
+    : `https://t.me/${botUsername}`;
 
   // Stable callback for connection checking
   const handleConnectionCheck = useCallback(async () => {
@@ -37,9 +71,11 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
     }
   }, [refetch, toast]);
 
-  // Poll for connection status
+  // Poll for connection status - Only poll WHILE checking and NOT connected
   useEffect(() => {
-    if (isConnected || isChecking) return;
+    if (isConnected || !isChecking) {
+      return;  // Exit if already connected OR not checking yet
+    }
 
     const pollInterval = setInterval(handleConnectionCheck, 3000);
     return () => clearInterval(pollInterval);
@@ -87,17 +123,11 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      Open Telegram and search for the bot
+                      Click "Open Telegram Bot" button below
                     </p>
-                    <a
-                      href={botLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium"
-                    >
-                      @{botUsername}
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                    <p className="text-xs text-gray-500 mt-1">
+                      This will open the bot with your unique connection link
+                    </p>
                   </div>
                 </div>
 
@@ -105,18 +135,28 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-semibold flex-shrink-0">
                     2
                   </div>
-                  <p className="text-sm text-gray-700">
-                    Send the <code className="px-2 py-0.5 bg-gray-100 rounded text-primary-600 font-mono text-xs">/start</code> command
-                  </p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Send the <code className="px-2 py-0.5 bg-gray-100 rounded text-primary-600 font-mono text-xs">/start</code> command
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Tap "Start" or type /start in the chat
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-semibold flex-shrink-0">
                     3
                   </div>
-                  <p className="text-sm text-gray-700">
-                    Wait for confirmation (this page will update automatically)
-                  </p>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Wait for confirmation
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      This page will update automatically within 3 seconds
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -128,10 +168,17 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
                 }}
                 className="w-full"
                 size="lg"
+                disabled={!connectToken}
               >
                 <Send className="mr-2 h-4 w-4" />
-                Open Telegram Bot
+                {connectToken ? 'Open Telegram Bot' : 'Generating secure link...'}
               </Button>
+
+              {connectToken && (
+                <p className="text-xs text-center text-gray-500">
+                  Your unique connection link is ready. This link expires in 24 hours.
+                </p>
+              )}
 
               {isChecking && (
                 <div className="text-center">

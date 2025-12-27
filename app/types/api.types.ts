@@ -39,6 +39,8 @@ export interface RemindersListResponse {
 export interface UpdateUserRequest {
   telegram_chat_id?: string;
   telegram_username?: string;
+  telegram_connect_token?: string | null;
+  telegram_connect_token_expires_at?: string | null;
   default_tone?: MessageTone;
   timezone?: string;
   onboarding_completed?: boolean;

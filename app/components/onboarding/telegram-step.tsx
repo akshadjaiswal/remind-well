@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Send, Check, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,7 +14,7 @@ interface TelegramStepProps {
 }
 
 export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
-  const { data: user, refetch } = useUser();
+  const { data: user, refetch } = useUser({ refetchInterval: false });
   const { toast } = useToast();
   const [isChecking, setIsChecking] = useState(false);
   const [testSent, setTestSent] = useState(false);
@@ -24,24 +24,26 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
   const botLink = `https://t.me/${botUsername}`;
   const isConnected = !!user?.telegram_chat_id;
 
+  // Stable callback for connection checking
+  const handleConnectionCheck = useCallback(async () => {
+    const { data } = await refetch();
+    if (data?.telegram_chat_id) {
+      setIsChecking(false);
+      toast({
+        title: 'Telegram Connected!',
+        description: 'Your Telegram account has been successfully linked.',
+        variant: 'default'
+      });
+    }
+  }, [refetch, toast]);
+
   // Poll for connection status
   useEffect(() => {
     if (isConnected || isChecking) return;
 
-    const pollInterval = setInterval(async () => {
-      const { data } = await refetch();
-      if (data?.telegram_chat_id) {
-        setIsChecking(false);
-        toast({
-          title: 'Telegram Connected!',
-          description: 'Your Telegram account has been successfully linked.',
-          variant: 'default'
-        });
-      }
-    }, 3000); // Poll every 3 seconds
-
+    const pollInterval = setInterval(handleConnectionCheck, 3000);
     return () => clearInterval(pollInterval);
-  }, [isConnected, isChecking, refetch, toast]);
+  }, [isConnected, isChecking, handleConnectionCheck]);
 
   const handleSendTestMessage = async () => {
     setIsSendingTest(true);

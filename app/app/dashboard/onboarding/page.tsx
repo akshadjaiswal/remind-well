@@ -29,10 +29,15 @@ export default function OnboardingPage() {
 
   // Update URL when step changes
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('step', String(currentStep));
-    router.replace(`/dashboard/onboarding?${params.toString()}`, { scroll: false });
-  }, [currentStep, router, searchParams]);
+    const params = new URLSearchParams(window.location.search);
+    const urlStep = params.get('step');
+
+    // Only update URL if step actually changed
+    if (urlStep !== String(currentStep)) {
+      params.set('step', String(currentStep));
+      router.replace(`/dashboard/onboarding?${params.toString()}`, { scroll: false });
+    }
+  }, [currentStep]);
 
   // Redirect if onboarding already completed
   useEffect(() => {

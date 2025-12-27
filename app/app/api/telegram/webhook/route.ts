@@ -28,14 +28,12 @@ export async function POST(request: Request) {
 
     // Handle /start command
     if (text === '/start') {
-      // Find user by any existing telegram_chat_id or create link
-      // For simplicity, we'll just update the first user without telegram
-      // In production, you'd want a more robust linking mechanism
-
+      // Find most recently created user without telegram (better than random first match)
       const { data: user } = await supabase
         .from('rw_users')
         .select('id')
         .is('telegram_chat_id', null)
+        .order('created_at', { ascending: false })
         .limit(1)
         .single();
 
@@ -50,7 +48,7 @@ export async function POST(request: Request) {
 
         await sendTelegramMessage(
           chatId,
-          '✅ Connected! You\'re all set to receive reminders.\n\nGo back to RemindWell and start creating your first reminder!'
+          '✅ Connected! You\'re all set to receive reminders.\n\nGo back to RemindWell and continue with the setup!'
         );
       } else {
         await sendTelegramMessage(

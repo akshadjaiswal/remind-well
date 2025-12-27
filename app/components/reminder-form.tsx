@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmojiPicker } from './emoji-picker';
 import { TimePicker } from './time-picker';
 import { reminderSchema } from '@/lib/validations';
+import { MIN_INTERVAL_MINUTES } from '@/lib/constants';
 import { useCreateReminder, useUpdateReminder } from '@/hooks/use-reminders';
 import type { Reminder } from '@/types/models';
 import type { CreateReminderRequest } from '@/types/api.types';
@@ -161,7 +162,7 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
                 type="number"
                 placeholder="Enter frequency"
                 className="h-11 hover:border-primary-300 focus:border-primary-500 transition-colors"
-                min={frequencyUnit === 'minutes' ? '15' : '1'}
+                min={frequencyUnit === 'minutes' ? String(MIN_INTERVAL_MINUTES) : '1'}
                 max={frequencyUnit === 'minutes' ? '1440' : '24'}
                 value={frequencyValue}
                 onChange={(e) => setFrequencyValue(e.target.value)}

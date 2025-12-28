@@ -7,13 +7,15 @@ import { UpdateUserRequest } from '@/types/api.types';
 import { useUIStore } from '@/lib/stores/ui-store';
 
 // Fetch current user
-export function useUser() {
+export function useUser(options?: { refetchInterval?: number | false }) {
   return useQuery({
     queryKey: ['user'],
     queryFn: async () => {
       const { data } = await apiClient.get<{ user: User }>('/api/user');
       return data.user;
-    }
+    },
+    refetchInterval: options?.refetchInterval ?? false,
+    refetchOnWindowFocus: false,
   });
 }
 

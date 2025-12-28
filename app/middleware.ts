@@ -35,6 +35,25 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL('/auth', request.url));
     }
+
+    // Check onboarding status
+    const { data: profile } = await supabase
+      .from('rw_users')
+      .select('onboarding_completed')
+      .eq('id', user.id)
+      .single();
+
+    // Redirect to onboarding if incomplete (unless already on onboarding page)
+    if (!profile?.onboarding_completed &&
+        !request.nextUrl.pathname.startsWith('/dashboard/onboarding')) {
+      return NextResponse.redirect(new URL('/dashboard/onboarding', request.url));
+    }
+
+    // Redirect away from onboarding if already complete
+    if (profile?.onboarding_completed &&
+        request.nextUrl.pathname.startsWith('/dashboard/onboarding')) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   // Redirect authenticated users away from auth page

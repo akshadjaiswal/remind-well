@@ -9,7 +9,14 @@ export const MESSAGE_TONES: Record<MessageTone, string> = {
   funny: 'Funny - Humorous and playful'
 } as const;
 
+// Environment-based minimum interval (5 min in dev, 15 min in production)
+export const MIN_INTERVAL_MINUTES = process.env.NODE_ENV === 'development' ? 5 : 15;
+export const MAX_INTERVAL_MINUTES = 1440; // 24 hours
+
 export const INTERVAL_PRESETS = [
+  ...(process.env.NODE_ENV === 'development'
+    ? [{ label: '5 minutes', minutes: 5 }]
+    : []),
   { label: '15 minutes', minutes: 15 },
   { label: '30 minutes', minutes: 30 },
   { label: '1 hour', minutes: 60 },
@@ -17,9 +24,6 @@ export const INTERVAL_PRESETS = [
   { label: '4 hours', minutes: 240 },
   { label: '8 hours', minutes: 480 }
 ] as const;
-
-export const MIN_INTERVAL_MINUTES = 15;
-export const MAX_INTERVAL_MINUTES = 1440; // 24 hours
 
 export const DEFAULT_ACTIVE_HOURS = {
   start: '09:00',

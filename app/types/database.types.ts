@@ -11,6 +11,8 @@ export interface DbUser {
   email: string;
   telegram_chat_id: string | null;
   telegram_username: string | null;
+  telegram_connect_token: string | null;
+  telegram_connect_token_expires_at: string | null;
   default_tone: MessageTone;
   timezone: string;
   onboarding_completed: boolean;

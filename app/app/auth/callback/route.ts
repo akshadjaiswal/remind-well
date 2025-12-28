@@ -10,8 +10,26 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
     await supabase.auth.exchangeCodeForSession(code);
+
+    // Check onboarding status to determine redirect
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('rw_users')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .single();
+
+      // Redirect based on onboarding status
+      const redirectTo = profile?.onboarding_completed
+        ? '/dashboard'
+        : '/dashboard/onboarding';
+
+      return NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
+    }
   }
 
-  // Redirect to dashboard after successful auth
+  // Fallback: redirect to dashboard
   return NextResponse.redirect(new URL('/dashboard', requestUrl.origin));
 }

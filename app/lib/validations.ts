@@ -1,11 +1,12 @@
 // Zod validation schemas
 
 import { z } from 'zod';
+import { MIN_INTERVAL_MINUTES } from './constants';
 
 export const reminderSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   emoji: z.string().max(10).optional().default('🔔'),
-  interval_minutes: z.number().min(15, 'Minimum interval is 15 minutes').max(1440, 'Maximum interval is 24 hours'),
+  interval_minutes: z.number().min(MIN_INTERVAL_MINUTES, `Minimum interval is ${MIN_INTERVAL_MINUTES} minutes`).max(1440, 'Maximum interval is 24 hours'),
   notification_method: z.enum(['telegram', 'email', 'both'], {
     errorMap: () => ({ message: 'Invalid notification method' })
   }),
@@ -26,6 +27,8 @@ export const reminderSchema = z.object({
 export const updateUserSchema = z.object({
   telegram_chat_id: z.string().optional(),
   telegram_username: z.string().optional(),
+  telegram_connect_token: z.string().nullable().optional(),
+  telegram_connect_token_expires_at: z.string().nullable().optional(),
   default_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional(),
   timezone: z.string().optional(),
   onboarding_completed: z.boolean().optional()
@@ -37,6 +40,7 @@ export const telegramWebhookSchema = z.object({
     message_id: z.number(),
     from: z.object({
       id: z.number(),
+      first_name: z.string(),
       username: z.string().optional()
     }),
     chat: z.object({

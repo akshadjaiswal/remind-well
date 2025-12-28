@@ -23,41 +23,78 @@ export async function POST(request: Request) {
     }
 
     const chatId = validated.message.chat.id.toString();
-    const username = validated.message.from.username;
+    const username = validated.message.from.username || validated.message.from.first_name;
     const text = validated.message.text;
 
     // Handle /start command
-    if (text === '/start') {
-      // Find user by any existing telegram_chat_id or create link
-      // For simplicity, we'll just update the first user without telegram
-      // In production, you'd want a more robust linking mechanism
+    if (text.startsWith('/start')) {
+      // Extract token from command: "/start abc123token"
+      const parts = text.split(' ');
+      const token = parts[1] || null;
 
-      const { data: user } = await supabase
+      if (!token) {
+        await sendTelegramMessage(
+          chatId,
+          'Please use the link from RemindWell app to connect your account.'
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      // Find user by token
+      const { data: user, error } = await supabase
         .from('rw_users')
-        .select('id')
-        .is('telegram_chat_id', null)
-        .limit(1)
+        .select('id, telegram_connect_token_expires_at')
+        .eq('telegram_connect_token', token)
+        .is('telegram_chat_id', null)  // Not already connected
         .single();
 
-      if (user) {
-        await supabase
-          .from('rw_users')
-          .update({
-            telegram_chat_id: chatId,
-            telegram_username: username
-          })
-          .eq('id', user.id);
-
+      if (!user) {
         await sendTelegramMessage(
           chatId,
-          '✅ Connected! You\'re all set to receive reminders.\n\nGo back to RemindWell and start creating your first reminder!'
+          '❌ Invalid or expired connection link. Please generate a new one from RemindWell.'
         );
-      } else {
-        await sendTelegramMessage(
-          chatId,
-          'Welcome! Please sign up at RemindWell first, then send /start again to connect your account.'
-        );
+        return NextResponse.json({ ok: true });
       }
+
+      // Check token expiration
+      const isExpired = user.telegram_connect_token_expires_at
+        ? new Date(user.telegram_connect_token_expires_at) < new Date()
+        : true;
+
+      if (isExpired) {
+        await sendTelegramMessage(
+          chatId,
+          '❌ This connection link has expired. Please generate a new one from RemindWell.'
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      // Update user with telegram data and clear token
+      const { error: updateError } = await supabase
+        .from('rw_users')
+        .update({
+          telegram_chat_id: chatId,
+          telegram_username: username,
+          telegram_connect_token: null,  // Clear token after use
+          telegram_connect_token_expires_at: null
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('[Telegram Webhook] Update error:', updateError);
+        await sendTelegramMessage(
+          chatId,
+          '❌ Error connecting your account. Please try again.'
+        );
+        return NextResponse.json({ ok: true });
+      }
+
+      console.log(`[Telegram Webhook] User ${user.id} connected successfully`);
+
+      await sendTelegramMessage(
+        chatId,
+        '✅ Connected! You\'re all set to receive reminders.\n\nGo back to RemindWell and continue with the setup!'
+      );
     }
 
     return NextResponse.json({ ok: true });

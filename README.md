@@ -215,17 +215,6 @@ Since Vercel Hobby tier only allows daily cron jobs, we use EasyCron (free) for 
 
 4. **Enable the job** and verify execution in EasyCron logs
 
-### Post-Deployment Checklist
-
-- [ ] All environment variables set in Vercel
-- [ ] Database migrations run in Supabase
-- [ ] EasyCron job created and enabled
-- [ ] CRON_SECRET matches between Vercel and EasyCron
-- [ ] Telegram bot webhook configured (if using Telegram)
-- [ ] Test reminder created and notification received
-
-See [my_docs/DEPLOYMENT.md](my_docs/DEPLOYMENT.md) for comprehensive deployment guide.
-
 ---
 
 ## Contributing
@@ -250,8 +239,8 @@ Contributions are welcome!
 
 ## Support
 
-- **Bugs** → [Open an issue](https://github.com/akshadjaiswal/remindwell/issues)
-- **Questions** → [Start a discussion](https://github.com/akshadjaiswal/remindwell/discussions)
+- **Bugs** → [Open an issue](https://github.com/akshadjaiswal/remind-well/issues)
+- **Questions** → [Start a discussion](https://github.com/akshadjaiswal/remind-well/discussions)
 
 ---
 

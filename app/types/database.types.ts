@@ -3,6 +3,7 @@
 export type MessageTone = 'motivational' | 'friendly' | 'direct' | 'funny';
 export type NotificationMethod = 'telegram' | 'email' | 'both';
 export type NotificationStatus = 'pending' | 'sent' | 'failed';
+export type ReminderType = 'recurring' | 'one_time';
 
 export interface DbUser {
   id: string;
@@ -25,7 +26,10 @@ export interface DbReminder {
   user_id: string;
   title: string;
   emoji: string;
-  interval_minutes: number;
+  reminder_type: ReminderType; // 'recurring' or 'one_time'
+  interval_minutes: number | null; // Nullable for one-time reminders
+  scheduled_for: string | null; // Exact datetime for one-time reminders (UTC)
+  archived_at: string | null; // Soft-delete timestamp
   notification_method: NotificationMethod;
   message_tone: MessageTone;
   active_hours_start: string | null; // HH:MM:SS format

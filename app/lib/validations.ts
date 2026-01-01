@@ -3,14 +3,23 @@
 import { z } from 'zod';
 import { MIN_INTERVAL_MINUTES } from './constants';
 
-export const reminderSchema = z.object({
+// Base schema for common fields
+const baseReminderSchema = {
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   emoji: z.string().max(10).optional().default('🔔'),
-  interval_minutes: z.number().min(MIN_INTERVAL_MINUTES, `Minimum interval is ${MIN_INTERVAL_MINUTES} minutes`).max(1440, 'Maximum interval is 24 hours'),
   notification_method: z.enum(['telegram', 'email', 'both'], {
     errorMap: () => ({ message: 'Invalid notification method' })
   }),
-  message_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional().default('friendly'),
+  message_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional().default('friendly')
+};
+
+// Recurring reminder schema
+const recurringReminderSchema = z.object({
+  ...baseReminderSchema,
+  reminder_type: z.literal('recurring').optional().default('recurring'),
+  interval_minutes: z.number()
+    .min(MIN_INTERVAL_MINUTES, `Minimum interval is ${MIN_INTERVAL_MINUTES} minutes`)
+    .max(1440, 'Maximum interval is 24 hours'),
   active_hours_start: z.union([z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)'), z.null()]).optional(),
   active_hours_end: z.union([z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (use HH:MM)'), z.null()]).optional(),
   skip_weekends: z.boolean().optional().default(false)
@@ -23,6 +32,22 @@ export const reminderSchema = z.object({
   },
   { message: 'Both start and end times required for active hours', path: ['active_hours_start'] }
 );
+
+// One-time reminder schema
+const oneTimeReminderSchema = z.object({
+  ...baseReminderSchema,
+  reminder_type: z.literal('one_time'),
+  scheduled_for: z.string().refine(
+    (val) => {
+      const date = new Date(val);
+      return date > new Date();
+    },
+    { message: 'Scheduled time must be in the future' }
+  )
+});
+
+// Union of both schemas
+export const reminderSchema = z.union([recurringReminderSchema, oneTimeReminderSchema]);
 
 export const updateUserSchema = z.object({
   telegram_chat_id: z.string().optional(),

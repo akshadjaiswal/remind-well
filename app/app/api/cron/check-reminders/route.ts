@@ -55,6 +55,7 @@ async function handleCronJob(request: Request) {
       `)
       .eq('is_active', true)
       .eq('is_paused', false)
+      .is('archived_at', null) // Exclude archived reminders
       .lte('next_scheduled_at', now.toISOString());
 
     if (error) {
@@ -69,21 +70,44 @@ async function handleCronJob(request: Request) {
       try {
         const user = Array.isArray(reminder.rw_users) ? reminder.rw_users[0] : reminder.rw_users;
 
-        // Check active hours
-        if (!isWithinActiveHours(
-          now,
-          user.timezone,
-          reminder.active_hours_start,
-          reminder.active_hours_end
-        )) {
-          console.log(`[CRON] Skipping ${reminder.id} - outside active hours`);
-          continue;
-        }
+        // Skip active hours/weekend checks for one-time reminders
+        // One-time reminders fire at exact scheduled time
+        if (reminder.reminder_type === 'recurring') {
+          // Check active hours (recurring only)
+          if (!isWithinActiveHours(
+            now,
+            user.timezone,
+            reminder.active_hours_start,
+            reminder.active_hours_end
+          )) {
+            console.log(`[CRON] Skipping ${reminder.id} - outside active hours`);
+            continue;
+          }
 
-        // Check weekends
-        if (reminder.skip_weekends && isWeekend(now)) {
-          console.log(`[CRON] Skipping ${reminder.id} - weekend`);
-          continue;
+          // Check weekends (recurring only)
+          if (reminder.skip_weekends && isWeekend(now)) {
+            console.log(`[CRON] Skipping ${reminder.id} - weekend`);
+            continue;
+          }
+        } else if (reminder.reminder_type === 'one_time') {
+          // Grace period check for one-time reminders
+          // If scheduled time is more than 24 hours in the past, archive without sending
+          const scheduledFor = new Date(reminder.scheduled_for);
+          const hoursPast = (now.getTime() - scheduledFor.getTime()) / (1000 * 60 * 60);
+
+          if (hoursPast > 24) {
+            console.log(`[CRON] Archiving stale one-time reminder ${reminder.id} (${hoursPast.toFixed(1)}h past scheduled time)`);
+
+            await supabase
+              .from('rw_reminders')
+              .update({
+                is_active: false,
+                archived_at: now.toISOString()
+              })
+              .eq('id', reminder.id);
+
+            continue; // Skip sending
+          }
         }
 
         // Generate AI message
@@ -153,22 +177,65 @@ async function handleCronJob(request: Request) {
           }
         }
 
-        // Update reminder - calculate next scheduled time
-        const nextScheduledAt = calculateNextScheduledAt(
-          reminder.interval_minutes,
-          user.timezone,
-          reminder.active_hours_start,
-          reminder.active_hours_end,
-          reminder.skip_weekends
-        );
+        // Post-send: Archive one-time reminders, recalculate next time for recurring
+        if (reminder.reminder_type === 'one_time') {
+          // One-time reminder: Archive after sending
+          console.log(`[CRON] Attempting to archive one-time reminder ${reminder.id}...`);
 
-        await supabase
-          .from('rw_reminders')
-          .update({
-            last_sent_at: now.toISOString(),
-            next_scheduled_at: nextScheduledAt.toISOString()
-          })
-          .eq('id', reminder.id);
+          const { data: updated, error: archiveError } = await supabase
+            .from('rw_reminders')
+            .update({
+              last_sent_at: now.toISOString(),
+              is_active: false,
+              archived_at: now.toISOString()
+            })
+            .eq('id', reminder.id)
+            .select()
+            .single();
+
+          if (archiveError) {
+            console.error(`[CRON] ❌ FAILED to archive one-time reminder ${reminder.id}:`, archiveError);
+            console.error(`[CRON] Error details:`, JSON.stringify(archiveError, null, 2));
+            failedCount++;
+          } else if (!updated) {
+            console.error(`[CRON] ❌ Archive update returned no data for ${reminder.id}`);
+            failedCount++;
+          } else {
+            console.log(`[CRON] ✅ Successfully archived one-time reminder ${reminder.id}`);
+            console.log(`[CRON] Verified: is_active=${updated.is_active}, archived_at=${updated.archived_at}`);
+          }
+        } else {
+          // Recurring reminder: Calculate next scheduled time
+          const nextScheduledAt = calculateNextScheduledAt(
+            reminder.interval_minutes,
+            user.timezone,
+            reminder.active_hours_start,
+            reminder.active_hours_end,
+            reminder.skip_weekends
+          );
+
+          console.log(`[CRON] Updating recurring reminder ${reminder.id} next_scheduled_at to ${nextScheduledAt.toISOString()}`);
+
+          const { data: updated, error: updateError } = await supabase
+            .from('rw_reminders')
+            .update({
+              last_sent_at: now.toISOString(),
+              next_scheduled_at: nextScheduledAt.toISOString()
+            })
+            .eq('id', reminder.id)
+            .select()
+            .single();
+
+          if (updateError) {
+            console.error(`[CRON] ❌ Failed to update recurring reminder ${reminder.id}:`, updateError);
+            failedCount++;
+          } else if (!updated) {
+            console.error(`[CRON] ❌ Recurring update returned no data for ${reminder.id}`);
+            failedCount++;
+          } else {
+            console.log(`[CRON] ✅ Updated recurring reminder ${reminder.id}`);
+          }
+        }
 
         // Increment daily stats
         await supabase.rpc('increment_daily_stats', {

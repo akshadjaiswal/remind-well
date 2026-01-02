@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2, Clock, Mail, MessageSquare, Pause, Play } from 'lucide-react';
+import { Pencil, Trash2, Clock, Mail, MessageSquare, Pause, Play, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToggleReminder } from '@/hooks/use-reminders';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { Reminder } from '@/types/models';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface ReminderCardProps {
@@ -48,9 +48,17 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
     return <Mail className="h-3.5 w-3.5" />;
   };
 
-  const nextScheduledText = reminder.next_scheduled_at
-    ? formatDistanceToNow(new Date(reminder.next_scheduled_at), { addSuffix: true })
-    : 'Not scheduled';
+  const nextScheduledText = reminder.reminder_type === 'one_time' && reminder.scheduled_for
+    ? `Fires ${formatDistanceToNow(new Date(reminder.scheduled_for), { addSuffix: true })}`
+    : reminder.next_scheduled_at
+      ? formatDistanceToNow(new Date(reminder.next_scheduled_at), { addSuffix: true })
+      : 'Not scheduled';
+
+  const frequencyDisplay = reminder.reminder_type === 'one_time' && reminder.scheduled_for
+    ? `Scheduled for ${format(new Date(reminder.scheduled_for), 'PPp')}`
+    : reminder.frequencyText;
+
+  const isOneTime = reminder.reminder_type === 'one_time';
 
   return (
     <Card
@@ -72,20 +80,23 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
               <h3 className="font-semibold text-lg text-gray-900 truncate">
                 {reminder.title}
               </h3>
-              <p className="text-sm text-gray-500 mt-0.5">{reminder.frequencyText}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{frequencyDisplay}</p>
             </div>
           </div>
           <Button
             variant={reminder.is_paused ? "outline" : "secondary"}
             size="sm"
             onClick={handleToggle}
-            disabled={toggleMutation.isPending}
+            disabled={toggleMutation.isPending || isOneTime}
             className={cn(
               "flex items-center gap-2 flex-shrink-0",
-              reminder.is_paused && "border-primary-300 text-primary-700 hover:bg-primary-50"
+              reminder.is_paused && "border-primary-300 text-primary-700 hover:bg-primary-50",
+              isOneTime && "cursor-not-allowed"
             )}
           >
-            {reminder.is_paused ? (
+            {isOneTime ? (
+              <span className="text-xs">Scheduled</span>
+            ) : reminder.is_paused ? (
               <>
                 <Play className="h-4 w-4" />
                 Resume
@@ -101,6 +112,9 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
 
         {/* Badges */}
         <div className="flex flex-wrap gap-2">
+          <Badge variant={isOneTime ? "default" : "secondary"} className="text-xs font-medium">
+            {isOneTime ? 'One-Time' : 'Recurring'}
+          </Badge>
           <Badge variant="secondary" className="text-xs font-medium">
             {getMethodIcon()}
             <span className="ml-1">
@@ -114,7 +128,7 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
           <Badge variant="secondary" className="text-xs font-medium capitalize">
             {reminder.message_tone}
           </Badge>
-          {reminder.skip_weekends && (
+          {!isOneTime && reminder.skip_weekends && (
             <Badge variant="secondary" className="text-xs font-medium">
               No weekends
             </Badge>

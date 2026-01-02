@@ -10,8 +10,9 @@
 
 ## Latest Updates
 
-- **Free-Tier Deployment** – Runs on Vercel Hobby tier with EasyCron integration (no paid plan required)
-- **AI-Powered Messages** – Groq LLaMA 3.1 70B generates unique, contextual reminders (no more boring "drink water")
+- **One-Time Reminders** (NEW) – Schedule reminders for specific date/time that auto-archive after sending
+- **Free-Tier Deployment** – Runs on Vercel Hobby tier with Supabase pg_cron (no paid plan required)
+- **AI-Powered Messages** – Groq LLaMA 3.3 70B generates unique, contextual reminders (no more boring "drink water")
 - **Multi-Channel Delivery** – Send reminders via Telegram, email, or both simultaneously
 - **Smart Scheduling** – Timezone-aware with active hours control and weekend skip options
 - **Dashboard & Stats** – Track active reminders, paused habits, and daily notification counts
@@ -22,10 +23,22 @@
 
 ### Core Features
 
-#### Smart Reminders
+#### Dual Reminder Types
+- **Recurring Reminders**: Repeating notifications on a schedule (15 min - 24 hours intervals)
+  - Pause and resume without losing your schedule
+  - Set active hours (e.g., only during work hours 9 AM - 5 PM)
+  - Skip weekends automatically
+  - Perfect for: hydration, breaks, stretching, medication
+
+- **One-Time Reminders**: Fire once at a specific date/time, then auto-archive
+  - Native datetime picker for easy scheduling
+  - Timezone-aware (converts your local time to UTC)
+  - Auto-archives after sending (keeps notification history)
+  - Perfect for: meetings, appointments, deadlines, special events
+
+#### Smart Reminders Features
 - Create custom reminders with emojis and personalized titles
-- Set flexible intervals from 15 minutes to 24 hours
-- Pause and resume reminders without losing your schedule
+- Choose notification method: Telegram, Email, or Both
 - Mark reminders inactive when no longer needed
 
 #### AI Message Generation
@@ -50,6 +63,61 @@
 - Reminder cards with quick actions (pause, edit, delete)
 - Empty states with helpful guidance
 - Responsive design for mobile and desktop
+
+---
+
+## Usage Guide
+
+### Creating Reminders
+
+1. **Choose Your Reminder Type**
+   - **Recurring** 🔄: For habits and regular tasks (drink water, take breaks, etc.)
+   - **One-Time** 📅: For specific events and deadlines (meetings, appointments, etc.)
+
+2. **Configure Your Reminder**
+
+   **For Recurring Reminders**:
+   - Set title and emoji
+   - Choose frequency (15 min - 24 hours)
+   - Select unit: Minutes or Hours
+   - Pick notification method: Telegram, Email, or Both
+   - Choose AI message tone: Motivational, Friendly, Direct, or Funny
+   - (Optional) Set active hours to limit when reminders fire
+   - (Optional) Enable weekend skip to pause on Sat/Sun
+
+   **For One-Time Reminders**:
+   - Set title and emoji
+   - Pick specific date and time via calendar picker
+   - Select notification method: Telegram, Email, or Both
+   - Choose AI message tone: Motivational, Friendly, Direct, or Funny
+   - ⚠️ Note: Active hours and weekend skip are not available for one-time reminders
+
+3. **Start Receiving Notifications**
+   - **Recurring**: First notification fires based on your interval, repeats indefinitely
+   - **One-Time**: Fires exactly at your scheduled date/time, then auto-archives
+
+### Managing Reminders
+
+- **Pause/Resume** (Recurring only): Temporarily stop reminders without losing your schedule
+- **Edit**: Update title, frequency, or schedule (both types)
+- **Delete**: Permanently remove a reminder
+- **View Status**:
+  - Recurring: Shows "Every 30 minutes" + next scheduled time
+  - One-Time: Shows "Scheduled for Jan 15, 2025, 2:00 PM" + countdown
+
+### Example Use Cases
+
+**Recurring Reminders**:
+- 💧 Hydration: Every 30 minutes during work hours (9 AM - 5 PM, skip weekends)
+- 🧘 Stretch break: Every 2 hours
+- 💊 Medication: Every 8 hours
+- 👀 Eye rest: Every 20 minutes (20-20-20 rule)
+
+**One-Time Reminders**:
+- 📅 Meeting with client: Jan 15, 2025, 2:00 PM
+- 🎂 Friend's birthday: Jan 20, 2025, 9:00 AM
+- 📝 Project deadline: Jan 25, 2025, 5:00 PM
+- ✈️ Flight departure: Feb 1, 2025, 6:00 AM
 
 ---
 

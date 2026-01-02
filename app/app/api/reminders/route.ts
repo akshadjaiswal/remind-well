@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { reminderSchema } from '@/lib/validations';
 import { calculateNextScheduledAt } from '@/lib/scheduling';
 import { timeToDatabase } from '@/lib/formatting';
+import { fromZonedTime } from 'date-fns-tz';
 
 export async function GET() {
   try {
@@ -16,10 +17,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: reminders, error } = await supabase
+    const { data: reminders, error} = await supabase
       .from('rw_reminders')
       .select('*')
       .eq('user_id', user.id)
+      .is('archived_at', null) // Exclude archived reminders
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -55,28 +57,51 @@ export async function POST(request: Request) {
 
     const timezone = userData?.timezone || 'UTC';
 
-    // Calculate next scheduled time
-    const nextScheduledAt = calculateNextScheduledAt(
-      validated.interval_minutes,
-      timezone,
-      validated.active_hours_start,
-      validated.active_hours_end,
-      validated.skip_weekends
-    );
-
-    // Convert time format for database (HH:MM to HH:MM:SS)
-    const reminderData = {
+    // Build reminder data based on type
+    let reminderData: any = {
       user_id: user.id,
       title: validated.title,
       emoji: validated.emoji,
-      interval_minutes: validated.interval_minutes,
+      reminder_type: validated.reminder_type,
       notification_method: validated.notification_method,
-      message_tone: validated.message_tone,
-      active_hours_start: validated.active_hours_start ? timeToDatabase(validated.active_hours_start) : null,
-      active_hours_end: validated.active_hours_end ? timeToDatabase(validated.active_hours_end) : null,
-      skip_weekends: validated.skip_weekends,
-      next_scheduled_at: nextScheduledAt.toISOString()
+      message_tone: validated.message_tone
     };
+
+    if (validated.reminder_type === 'recurring') {
+      // Recurring reminder: calculate next_scheduled_at using interval
+      const nextScheduledAt = calculateNextScheduledAt(
+        validated.interval_minutes,
+        timezone,
+        validated.active_hours_start,
+        validated.active_hours_end,
+        validated.skip_weekends
+      );
+
+      reminderData = {
+        ...reminderData,
+        interval_minutes: validated.interval_minutes,
+        active_hours_start: validated.active_hours_start ? timeToDatabase(validated.active_hours_start) : null,
+        active_hours_end: validated.active_hours_end ? timeToDatabase(validated.active_hours_end) : null,
+        skip_weekends: validated.skip_weekends,
+        next_scheduled_at: nextScheduledAt.toISOString(),
+        scheduled_for: null, // Explicitly null for recurring
+        archived_at: null
+      };
+    } else {
+      // One-time reminder: convert user's local time to UTC
+      const scheduledForUTC = fromZonedTime(new Date(validated.scheduled_for), timezone);
+
+      reminderData = {
+        ...reminderData,
+        scheduled_for: scheduledForUTC.toISOString(),
+        next_scheduled_at: scheduledForUTC.toISOString(), // Mirror for cron
+        interval_minutes: null, // Explicitly null for one-time
+        active_hours_start: null,
+        active_hours_end: null,
+        skip_weekends: false,
+        archived_at: null
+      };
+    }
 
     const { data: reminder, error } = await supabase
       .from('rw_reminders')

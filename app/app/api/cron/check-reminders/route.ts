@@ -180,16 +180,30 @@ async function handleCronJob(request: Request) {
         // Post-send: Archive one-time reminders, recalculate next time for recurring
         if (reminder.reminder_type === 'one_time') {
           // One-time reminder: Archive after sending
-          await supabase
+          console.log(`[CRON] Attempting to archive one-time reminder ${reminder.id}...`);
+
+          const { data: updated, error: archiveError } = await supabase
             .from('rw_reminders')
             .update({
               last_sent_at: now.toISOString(),
               is_active: false,
               archived_at: now.toISOString()
             })
-            .eq('id', reminder.id);
+            .eq('id', reminder.id)
+            .select()
+            .single();
 
-          console.log(`[CRON] Archived one-time reminder ${reminder.id} after sending`);
+          if (archiveError) {
+            console.error(`[CRON] ❌ FAILED to archive one-time reminder ${reminder.id}:`, archiveError);
+            console.error(`[CRON] Error details:`, JSON.stringify(archiveError, null, 2));
+            failedCount++;
+          } else if (!updated) {
+            console.error(`[CRON] ❌ Archive update returned no data for ${reminder.id}`);
+            failedCount++;
+          } else {
+            console.log(`[CRON] ✅ Successfully archived one-time reminder ${reminder.id}`);
+            console.log(`[CRON] Verified: is_active=${updated.is_active}, archived_at=${updated.archived_at}`);
+          }
         } else {
           // Recurring reminder: Calculate next scheduled time
           const nextScheduledAt = calculateNextScheduledAt(
@@ -200,13 +214,27 @@ async function handleCronJob(request: Request) {
             reminder.skip_weekends
           );
 
-          await supabase
+          console.log(`[CRON] Updating recurring reminder ${reminder.id} next_scheduled_at to ${nextScheduledAt.toISOString()}`);
+
+          const { data: updated, error: updateError } = await supabase
             .from('rw_reminders')
             .update({
               last_sent_at: now.toISOString(),
               next_scheduled_at: nextScheduledAt.toISOString()
             })
-            .eq('id', reminder.id);
+            .eq('id', reminder.id)
+            .select()
+            .single();
+
+          if (updateError) {
+            console.error(`[CRON] ❌ Failed to update recurring reminder ${reminder.id}:`, updateError);
+            failedCount++;
+          } else if (!updated) {
+            console.error(`[CRON] ❌ Recurring update returned no data for ${reminder.id}`);
+            failedCount++;
+          } else {
+            console.log(`[CRON] ✅ Updated recurring reminder ${reminder.id}`);
+          }
         }
 
         // Increment daily stats

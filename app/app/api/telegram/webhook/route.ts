@@ -14,11 +14,12 @@ const supabase = createClient(
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('[Telegram Webhook] Received:', body);
+    console.log('[Telegram Webhook] Received update:', JSON.stringify(body, null, 2));
 
     const validated = telegramWebhookSchema.parse(body);
 
     if (!validated.message?.text) {
+      console.log('[Telegram Webhook] No text message, ignoring');
       return NextResponse.json({ ok: true });
     }
 
@@ -26,13 +27,18 @@ export async function POST(request: Request) {
     const username = validated.message.from.username || validated.message.from.first_name;
     const text = validated.message.text;
 
+    console.log(`[Telegram Webhook] Processing message from ${username} (chat: ${chatId}): "${text}"`);
+
     // Handle /start command
     if (text.startsWith('/start')) {
       // Extract token from command: "/start abc123token"
       const parts = text.split(' ');
       const token = parts[1] || null;
 
+      console.log(`[Telegram Webhook] /start command with token: ${token ? 'YES' : 'NO'}`);
+
       if (!token) {
+        console.log('[Telegram Webhook] No token provided, sending help message');
         await sendTelegramMessage(
           chatId,
           'Please use the link from RemindWell app to connect your account.'
@@ -41,6 +47,7 @@ export async function POST(request: Request) {
       }
 
       // Find user by token
+      console.log(`[Telegram Webhook] Looking up user with token: ${token.substring(0, 8)}...`);
       const { data: user, error } = await supabase
         .from('rw_users')
         .select('id, telegram_connect_token_expires_at')
@@ -49,12 +56,15 @@ export async function POST(request: Request) {
         .single();
 
       if (!user) {
+        console.log(`[Telegram Webhook] No user found for token or already connected. Error: ${error?.message}`);
         await sendTelegramMessage(
           chatId,
           '❌ Invalid or expired connection link. Please generate a new one from RemindWell.'
         );
         return NextResponse.json({ ok: true });
       }
+
+      console.log(`[Telegram Webhook] Found user: ${user.id}`);
 
       // Check token expiration
       const isExpired = user.telegram_connect_token_expires_at

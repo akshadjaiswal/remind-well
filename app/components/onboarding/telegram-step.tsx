@@ -21,9 +21,47 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
   const [testSent, setTestSent] = useState(false);
   const [isSendingTest, setIsSendingTest] = useState(false);
   const [connectToken, setConnectToken] = useState<string | null>(null);
+  const [webhookError, setWebhookError] = useState<string | null>(null);
+  const [webhookChecking, setWebhookChecking] = useState(true);
 
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'your_bot';
   const isConnected = !!user?.telegram_chat_id;
+
+  // Check webhook health on mount
+  useEffect(() => {
+    async function checkWebhookHealth() {
+      try {
+        const response = await apiClient.get('/api/admin/webhook-status');
+        const data = response.data;
+
+        // Check if webhook is configured
+        if (data.status === 'not_configured') {
+          setWebhookError('Telegram webhook is not configured. Please contact support.');
+          setWebhookChecking(false);
+          return;
+        }
+
+        // Check if webhook has errors
+        if (data.webhook?.last_error_message) {
+          console.warn('[Telegram Step] Webhook has errors:', data.webhook.last_error_message);
+          setWebhookError(`Webhook may have issues: ${data.webhook.last_error_message}. Connection might not work.`);
+        }
+
+        // Check pending updates
+        if (data.webhook?.pending_update_count > 5) {
+          console.warn('[Telegram Step] High pending updates:', data.webhook.pending_update_count);
+        }
+
+        setWebhookChecking(false);
+      } catch (error) {
+        console.error('[Telegram Step] Failed to check webhook:', error);
+        setWebhookChecking(false);
+        // Don't block the user if webhook check fails
+      }
+    }
+
+    checkWebhookHealth();
+  }, []);
 
   // Generate token on mount
   useEffect(() => {
@@ -110,6 +148,24 @@ export function TelegramStep({ onNext, onSkip }: TelegramStepProps) {
           Get instant notifications on Telegram for your reminders
         </p>
       </div>
+
+      {/* Webhook Error Warning */}
+      {webhookError && (
+        <div className="rounded-lg bg-warning-50 border border-warning-200 p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-warning-600 text-lg">⚠️</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-warning-800">Webhook Configuration Issue</p>
+              <p className="text-xs text-warning-700 mt-1">
+                {webhookError}
+              </p>
+              <p className="text-xs text-warning-600 mt-2">
+                If connection fails, please contact support or try again later.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Card className="border-2 border-gray-200">
         <CardContent className="pt-6">

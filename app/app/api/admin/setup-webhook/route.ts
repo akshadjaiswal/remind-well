@@ -17,10 +17,28 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             error: 'No webhook URL provided and no NEXT_PUBLIC_APP_URL or VERCEL_URL found',
-            hint: 'Provide URL via query parameter: /api/admin/setup-webhook?url=https://your-ngrok-url.ngrok-free.app/api/telegram/webhook'
+            hint: 'Provide URL via query parameter: /api/admin/setup-webhook?url=https://your-app.vercel.app/api/telegram/webhook'
           },
           { status: 400 }
         );
+      }
+
+      // Validate URL for production use
+      if (appUrl.includes('localhost') || appUrl.includes('127.0.0.1')) {
+        return NextResponse.json(
+          {
+            error: 'Invalid app URL for production webhook',
+            current_url: appUrl,
+            message: 'Localhost URLs cannot be used for Telegram webhooks. Please set NEXT_PUBLIC_APP_URL to your production Vercel URL.',
+            hint: 'For local testing, use ngrok and provide the URL via query parameter'
+          },
+          { status: 400 }
+        );
+      }
+
+      // Warn about ngrok URLs but allow them
+      if (appUrl.includes('ngrok')) {
+        console.warn('[ADMIN] Warning: Using ngrok URL for webhook. This is temporary and will break when tunnel expires.');
       }
 
       // Ensure URL has protocol
@@ -35,12 +53,41 @@ export async function POST(request: Request) {
 
     // Get current status to confirm
     const info = await getTelegramWebhookInfo();
+    const webhookInfo = info.result || info;
+
+    // Validate webhook was set correctly
+    if (webhookInfo.url !== webhookUrl) {
+      return NextResponse.json(
+        {
+          error: 'Webhook URL mismatch after setup',
+          expected: webhookUrl,
+          actual: webhookInfo.url,
+          message: 'Telegram API did not confirm the webhook URL correctly'
+        },
+        { status: 500 }
+      );
+    }
+
+    // Check for pending errors
+    const hasError = webhookInfo.last_error_message;
+    const pendingUpdates = webhookInfo.pending_update_count || 0;
+
+    if (hasError) {
+      console.warn('[ADMIN] Webhook has errors:', webhookInfo.last_error_message);
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Webhook configured successfully',
       webhook_url: webhookUrl,
-      status: info
+      webhook_status: {
+        url: webhookInfo.url,
+        pending_updates: pendingUpdates,
+        has_error: !!hasError,
+        last_error: hasError || null,
+        max_connections: webhookInfo.max_connections
+      },
+      warning: hasError ? `Webhook has previous errors: ${hasError}. New connections should work now.` : null
     });
   } catch (error: any) {
     console.error('[ADMIN] Setup webhook error:', error);

@@ -16,8 +16,10 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { MobileNav } from './mobile-nav';
 import { useUser } from '@/hooks/use-user';
 import { useUserStore } from '@/lib/stores/user-store';
+import { useUIStore } from '@/lib/stores/ui-store';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 
 export function Header() {
@@ -26,11 +28,24 @@ export function Header() {
   const router = useRouter();
   const { data: user } = useUser();
   const { clearUser } = useUserStore();
+  const { reset: resetUIStore } = useUIStore();
+  const queryClient = useQueryClient();
   const supabase = createClient();
 
   const handleSignOut = async () => {
+    // Sign out from Supabase
     await supabase.auth.signOut();
+
+    // Clear user store
     clearUser();
+
+    // Clear React Query cache
+    queryClient.clear();
+
+    // Reset UI store
+    resetUIStore();
+
+    // Redirect to home
     router.push('/');
   };
 

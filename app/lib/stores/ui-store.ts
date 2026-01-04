@@ -24,6 +24,9 @@ interface UIStore {
   isTelegramModalOpen: boolean;
   openTelegramModal: () => void;
   closeTelegramModal: () => void;
+
+  // Reset all state (for logout)
+  reset: () => void;
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -67,5 +70,13 @@ export const useUIStore = create<UIStore>((set) => ({
 
   openTelegramModal: () => set({ isTelegramModalOpen: true }),
 
-  closeTelegramModal: () => set({ isTelegramModalOpen: false })
+  closeTelegramModal: () => set({ isTelegramModalOpen: false }),
+
+  // Reset function
+  reset: () => set({
+    toasts: [],
+    isDeleteModalOpen: false,
+    reminderToDelete: null,
+    isTelegramModalOpen: false
+  })
 }));

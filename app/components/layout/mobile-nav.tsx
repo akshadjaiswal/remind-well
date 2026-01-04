@@ -7,8 +7,10 @@ import { X, LayoutDashboard, Bell, Settings as SettingsIcon, LogOut } from 'luci
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useUser } from '@/hooks/use-user';
 import { useUserStore } from '@/lib/stores/user-store';
+import { useUIStore } from '@/lib/stores/ui-store';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 
 interface MobileNavProps {
@@ -21,6 +23,8 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const router = useRouter();
   const { data: user } = useUser();
   const { clearUser } = useUserStore();
+  const { reset: resetUIStore } = useUIStore();
+  const queryClient = useQueryClient();
   const supabase = createClient();
 
   // Debug logging
@@ -47,10 +51,23 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
   }, [isOpen]);
 
   const handleSignOut = async () => {
+    // Sign out from Supabase
     await supabase.auth.signOut();
+
+    // Clear user store
     clearUser();
-    router.push('/');
+
+    // Clear React Query cache
+    queryClient.clear();
+
+    // Reset UI store
+    resetUIStore();
+
+    // Close mobile nav
     onClose();
+
+    // Redirect to home
+    router.push('/');
   };
 
   const navLinks = [

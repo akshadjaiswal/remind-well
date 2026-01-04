@@ -129,6 +129,7 @@ export default function OnboardingPage() {
           {currentStep === 4 && (
             <ReminderStep
               onComplete={handleComplete}
+              onSkip={handleComplete}
               onBack={handleBack}
             />
           )}

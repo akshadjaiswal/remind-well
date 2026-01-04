@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Bell, Check } from 'lucide-react';
+import { Bell, Check, Clock, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,9 +25,10 @@ import { useToast } from '@/hooks/use-toast';
 interface ReminderStepProps {
   onComplete: () => void;
   onBack: () => void;
+  onSkip: () => void;
 }
 
-export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
+export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) {
   const { data: user } = useUser();
   const createReminder = useCreateReminder();
   const updateUser = useUpdateUser();
@@ -36,6 +37,8 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
   const [emoji, setEmoji] = useState('💧');
   const [frequencyValue, setFrequencyValue] = useState('60');
   const [frequencyUnit, setFrequencyUnit] = useState<'minutes' | 'hours'>('minutes');
+  const [reminderType, setReminderType] = useState<'recurring' | 'one_time'>('recurring');
+  const [scheduledFor, setScheduledFor] = useState('');
 
   const hasTelegram = !!user?.telegram_chat_id;
   const defaultMethod = hasTelegram ? 'both' : 'email';
@@ -63,20 +66,35 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
   };
 
   const onSubmit = async (data: { title: string; notification_method: string }) => {
-    const intervalMinutes = frequencyUnit === 'hours'
-      ? parseInt(frequencyValue) * 60
-      : parseInt(frequencyValue);
+    let payload: any;
 
-    const payload = {
-      title: data.title,
-      emoji,
-      interval_minutes: intervalMinutes,
-      notification_method: data.notification_method as any,
-      message_tone: user?.default_tone || 'friendly',
-      skip_weekends: false,
-      active_hours_start: undefined,
-      active_hours_end: undefined,
-    };
+    if (reminderType === 'recurring') {
+      const intervalMinutes = frequencyUnit === 'hours'
+        ? parseInt(frequencyValue) * 60
+        : parseInt(frequencyValue);
+
+      payload = {
+        reminder_type: 'recurring',
+        title: data.title,
+        emoji,
+        interval_minutes: intervalMinutes,
+        notification_method: data.notification_method,
+        message_tone: user?.default_tone || 'friendly',
+        skip_weekends: false,
+        active_hours_start: undefined,
+        active_hours_end: undefined,
+      };
+    } else {
+      // One-time reminder
+      payload = {
+        reminder_type: 'one_time',
+        title: data.title,
+        emoji,
+        scheduled_for: scheduledFor,
+        notification_method: data.notification_method,
+        message_tone: user?.default_tone || 'friendly',
+      };
+    }
 
     try {
       // Create the reminder
@@ -98,6 +116,29 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
       toast({
         title: 'Failed to Create Reminder',
         description: error.response?.data?.error || 'Please try again',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      // Mark onboarding as complete without creating reminder
+      await updateUser.mutateAsync({ onboarding_completed: true });
+
+      toast({
+        title: 'Onboarding Complete!',
+        description: 'You can create reminders from the dashboard anytime.',
+        variant: 'default'
+      });
+
+      // Skip to dashboard
+      onSkip();
+    } catch (error) {
+      console.error('Failed to skip:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to complete onboarding. Please try again.',
         variant: 'destructive'
       });
     }
@@ -159,8 +200,37 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
           {/* Emoji */}
           <EmojiPicker value={emoji} onChange={setEmoji} />
 
-          {/* Frequency */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* Reminder Type */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700">
+              Reminder Type
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant={reminderType === 'recurring' ? 'default' : 'outline'}
+                onClick={() => setReminderType('recurring')}
+                className="h-11"
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                Recurring
+              </Button>
+              <Button
+                type="button"
+                variant={reminderType === 'one_time' ? 'default' : 'outline'}
+                onClick={() => setReminderType('one_time')}
+                className="h-11"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                One-Time
+              </Button>
+            </div>
+          </div>
+
+          {/* Conditional Fields Based on Reminder Type */}
+          {reminderType === 'recurring' ? (
+            /* Frequency */
+            <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2 space-y-2">
               <Label htmlFor="frequency-value" className="text-sm font-medium text-gray-700">
                 Frequency <span className="text-error-500">*</span>
@@ -189,7 +259,27 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
                 </SelectContent>
               </Select>
             </div>
-          </div>
+            </div>
+          ) : (
+            /* One-Time Reminder */
+            <div className="space-y-2">
+              <Label htmlFor="scheduled-for" className="text-sm font-medium text-gray-700">
+                Schedule For <span className="text-error-500">*</span>
+              </Label>
+              <Input
+                id="scheduled-for"
+                type="datetime-local"
+                value={scheduledFor}
+                onChange={(e) => setScheduledFor(e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+                className="h-11"
+                required
+              />
+              <p className="text-xs text-gray-500">
+                Select when you want to receive this reminder
+              </p>
+            </div>
+          )}
 
           {/* Notification Method */}
           <div className="space-y-2">
@@ -224,26 +314,40 @@ export function ReminderStep({ onComplete, onBack }: ReminderStepProps) {
       </Card>
 
       {/* Navigation Buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <Button
           type="button"
           onClick={onBack}
           variant="outline"
-          className="flex-1"
+          className="sm:flex-1"
           size="lg"
           disabled={isPending}
         >
           Back
         </Button>
         <Button
+          type="button"
+          onClick={handleSkip}
+          variant="ghost"
+          className="sm:flex-1"
+          size="lg"
+          disabled={isPending}
+        >
+          Skip for Now
+        </Button>
+        <Button
           type="submit"
           disabled={isPending}
-          className="flex-1"
+          className="sm:flex-1"
           size="lg"
         >
-          {isPending ? 'Creating...' : 'Complete Setup'}
+          {isPending ? 'Creating...' : 'Create Reminder'}
         </Button>
       </div>
+
+      <p className="text-xs text-center text-gray-500 mt-2">
+        You can always create reminders later from the dashboard
+      </p>
     </form>
   );
 }

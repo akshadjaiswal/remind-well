@@ -39,7 +39,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
           <Button
             variant="outline"
             type="button"
-            className="w-full justify-start text-3xl h-16 hover:border-primary-300 hover:bg-primary-50/50 transition-all group"
+            className="w-full justify-start text-2xl sm:text-3xl h-14 sm:h-16 hover:border-primary-300 hover:bg-primary-50/50 transition-all group"
           >
             <span className="mr-3 group-hover:scale-110 transition-transform">{value}</span>
             <span className="text-sm text-gray-500 font-normal">Click to change emoji</span>
@@ -54,12 +54,12 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-1">Select an icon that represents your reminder</p>
           </DialogHeader>
-          <div className="grid grid-cols-8 gap-1 p-4 max-h-[400px] overflow-y-auto">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-1 p-4 max-h-[400px] overflow-y-auto">
             {COMMON_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
                 onClick={() => handleSelect(emoji)}
-                className="text-3xl p-3 hover:bg-primary-50 rounded-xl transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="text-2xl sm:text-3xl p-4 sm:p-3 min-h-[44px] min-w-[44px] hover:bg-primary-50 rounded-xl transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 {emoji}
               </button>

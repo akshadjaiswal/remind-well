@@ -23,14 +23,14 @@ export function EmptyState() {
     <div className="min-h-[60vh] flex items-center justify-center animate-fade-in">
       <div className="max-w-3xl mx-auto text-center px-4">
         {/* Illustration */}
-        <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary-50 mb-6">
-            <Sparkles className="h-12 w-12 text-primary-500" />
+        <div className="mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary-50 mb-4 sm:mb-6">
+            <Sparkles className="h-10 w-10 sm:h-12 sm:w-12 text-primary-500" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             Start Building Better Habits
           </h2>
-          <p className="text-lg text-gray-500 max-w-md mx-auto">
+          <p className="text-base sm:text-lg text-gray-500 max-w-md mx-auto px-4 sm:px-0">
             Create your first reminder and let RemindWell help you stay consistent with your goals
           </p>
         </div>
@@ -39,9 +39,9 @@ export function EmptyState() {
         <Button
           onClick={handleCreateReminder}
           size="lg"
-          className="bg-primary-500 hover:bg-primary-600 text-white shadow-sm mb-12 h-12 px-8"
+          className="bg-primary-500 hover:bg-primary-600 text-white shadow-sm mb-8 sm:mb-12 h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base"
         >
-          <Plus className="mr-2 h-5 w-5" />
+          <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
           Create Your First Reminder
         </Button>
 
@@ -55,19 +55,19 @@ export function EmptyState() {
             <div className="h-px w-12 bg-gray-200" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {SUGGESTED_HABITS.map((habit) => (
               <Card
                 key={habit.title}
                 className="cursor-pointer hover:shadow-md hover:border-primary-200 transition-all duration-200 group"
                 onClick={handleCreateReminder}
               >
-                <div className="p-6 text-center space-y-3">
-                  <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">
+                <div className="p-4 sm:p-6 text-center space-y-2 sm:space-y-3">
+                  <div className="text-3xl sm:text-4xl mb-1 sm:mb-2 group-hover:scale-110 transition-transform">
                     {habit.emoji}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-1">
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 mb-1">
                       {habit.title}
                     </p>
                     <p className="text-xs text-gray-500">

@@ -21,6 +21,7 @@ import { reminderSchema } from '@/lib/validations';
 import { useCreateReminder } from '@/hooks/use-reminders';
 import { useUpdateUser, useUser } from '@/hooks/use-user';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ReminderStepProps {
   onComplete: () => void;
@@ -33,6 +34,7 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
   const createReminder = useCreateReminder();
   const updateUser = useUpdateUser();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [emoji, setEmoji] = useState('💧');
   const [frequencyValue, setFrequencyValue] = useState('60');
@@ -103,6 +105,9 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
       // Mark onboarding as complete
       await updateUser.mutateAsync({ onboarding_completed: true });
 
+      // Wait for cache to sync before navigation
+      await queryClient.refetchQueries({ queryKey: ['user'] });
+
       toast({
         title: 'Reminder Created!',
         description: 'Your first reminder has been set up successfully.',
@@ -149,8 +154,8 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">Create Your First Reminder</h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Create Your First Reminder</h2>
+        <p className="mt-2 text-xs sm:text-sm text-gray-600">
           Let's set up a reminder to help you build a healthy habit
         </p>
       </div>
@@ -160,17 +165,17 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
         <Label className="text-sm font-medium text-gray-700 mb-3 block">
           Quick Start (Optional)
         </Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
           {SUGGESTED_HABITS.map((habit) => (
             <button
               key={habit.title}
               type="button"
               onClick={() => handleSuggestedHabit(habit)}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 p-3 hover:border-primary-300 hover:bg-primary-50 transition-colors text-left"
+              className="flex items-center gap-2 rounded-lg border border-gray-200 p-3 hover:border-primary-300 hover:bg-primary-50 transition-colors text-left min-h-[44px]"
             >
-              <span className="text-2xl">{habit.emoji}</span>
+              <span className="text-xl sm:text-2xl flex-shrink-0">{habit.emoji}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{habit.title}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{habit.title}</p>
                 <p className="text-xs text-gray-500">Every {habit.interval} min</p>
               </div>
             </button>
@@ -205,23 +210,23 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
             <Label className="text-sm font-medium text-gray-700">
               Reminder Type
             </Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant={reminderType === 'recurring' ? 'default' : 'outline'}
                 onClick={() => setReminderType('recurring')}
-                className="h-11"
+                className="h-11 sm:h-12 text-xs sm:text-sm min-h-[44px]"
               >
-                <Clock className="mr-2 h-4 w-4" />
+                <Clock className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Recurring
               </Button>
               <Button
                 type="button"
                 variant={reminderType === 'one_time' ? 'default' : 'outline'}
                 onClick={() => setReminderType('one_time')}
-                className="h-11"
+                className="h-11 sm:h-12 text-xs sm:text-sm min-h-[44px]"
               >
-                <Calendar className="mr-2 h-4 w-4" />
+                <Calendar className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 One-Time
               </Button>
             </div>
@@ -230,8 +235,8 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
           {/* Conditional Fields Based on Reminder Type */}
           {reminderType === 'recurring' ? (
             /* Frequency */
-            <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2 space-y-2">
+            <div className="grid grid-cols-1 xs:grid-cols-3 gap-3">
+            <div className="xs:col-span-2 space-y-2">
               <Label htmlFor="frequency-value" className="text-sm font-medium text-gray-700">
                 Frequency <span className="text-error-500">*</span>
               </Label>

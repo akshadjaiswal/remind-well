@@ -141,16 +141,16 @@ export function Header() {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuContent align="end" className="w-56 sm:w-64 mx-2 sm:mx-0">
                     {/* User Info */}
                     <div className="flex items-center gap-3 p-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary-100 text-primary-700 font-medium">
+                      <Avatar className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
+                        <AvatarFallback className="bg-primary-100 text-primary-700 font-medium text-xs sm:text-sm">
                           {getInitials(user.email)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-xs sm:text-sm font-medium text-gray-900 truncate break-all">
                           {user.email}
                         </p>
                         <p className="text-xs text-gray-500">
@@ -165,7 +165,7 @@ export function Header() {
                     <DropdownMenuItem asChild>
                       <Link
                         href="/dashboard/settings"
-                        className="cursor-pointer flex items-center"
+                        className="cursor-pointer flex items-center min-h-[44px] py-3"
                       >
                         <SettingsIcon className="mr-2 h-4 w-4" />
                         Settings
@@ -177,7 +177,7 @@ export function Header() {
                     {/* Sign Out */}
                     <DropdownMenuItem
                       onClick={handleSignOut}
-                      className="cursor-pointer text-error-600 focus:text-error-700 focus:bg-error-50"
+                      className="cursor-pointer text-error-600 focus:text-error-700 focus:bg-error-50 min-h-[44px] py-3"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out

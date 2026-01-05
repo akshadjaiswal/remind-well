@@ -123,23 +123,35 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
           <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
             1
           </div>
-          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Basics</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">
+            <span className="inline xs:hidden">1</span>
+            <span className="hidden xs:inline sm:hidden">Info</span>
+            <span className="hidden sm:inline">Basics</span>
+          </span>
         </div>
-        <div className="flex-1 h-0.5 bg-gray-200 mx-2 sm:mx-4" />
+        <div className="flex-1 h-0.5 bg-gray-200 mx-1 sm:mx-2 md:mx-4" />
 
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
             2
           </div>
-          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Notifications</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">
+            <span className="inline xs:hidden">2</span>
+            <span className="hidden xs:inline sm:hidden">Alert</span>
+            <span className="hidden sm:inline">Notifications</span>
+          </span>
         </div>
-        <div className="flex-1 h-0.5 bg-gray-200 mx-2 sm:mx-4" />
+        <div className="flex-1 h-0.5 bg-gray-200 mx-1 sm:mx-2 md:mx-4" />
 
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm">
             3
           </div>
-          <span className="text-sm font-medium text-gray-900 hidden sm:inline">Schedule</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">
+            <span className="inline xs:hidden">3</span>
+            <span className="hidden xs:inline sm:hidden">Time</span>
+            <span className="hidden sm:inline">Schedule</span>
+          </span>
         </div>
       </div>
 
@@ -150,28 +162,28 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
             <Label className="text-sm font-medium text-gray-700">
               Reminder Type <span className="text-error-500">*</span>
             </Label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant={reminderType === 'recurring' ? 'default' : 'outline'}
-                className="h-24 flex flex-col gap-2 items-center justify-center transition-all"
+                className="h-20 sm:h-24 flex flex-col gap-2 items-center justify-center transition-all min-h-[44px]"
                 onClick={() => setReminderType('recurring')}
               >
-                <Clock className="h-6 w-6" />
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
                 <div className="flex flex-col items-center">
-                  <span className="font-semibold">Recurring</span>
+                  <span className="font-semibold text-sm sm:text-base">Recurring</span>
                   <span className="text-xs opacity-80">Repeats on schedule</span>
                 </div>
               </Button>
               <Button
                 type="button"
                 variant={reminderType === 'one_time' ? 'default' : 'outline'}
-                className="h-24 flex flex-col gap-2 items-center justify-center transition-all"
+                className="h-20 sm:h-24 flex flex-col gap-2 items-center justify-center transition-all min-h-[44px]"
                 onClick={() => setReminderType('one_time')}
               >
-                <Calendar className="h-6 w-6" />
+                <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                 <div className="flex flex-col items-center">
-                  <span className="font-semibold">One-Time</span>
+                  <span className="font-semibold text-sm sm:text-base">One-Time</span>
                   <span className="text-xs opacity-80">Fires once, then archives</span>
                 </div>
               </Button>
@@ -213,8 +225,8 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
           <EmojiPicker value={emoji} onChange={setEmoji} />
 
           {reminderType === 'recurring' ? (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-2 space-y-2">
+            <div className="grid grid-cols-1 xs:grid-cols-3 gap-3">
+              <div className="xs:col-span-2 space-y-2">
                 <Label htmlFor="frequency-value" className="text-sm font-medium text-gray-700">
                   Frequency <span className="text-error-500">*</span>
                 </Label>

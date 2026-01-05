@@ -37,11 +37,11 @@ export default function SettingsPage() {
     timezone !== user?.timezone || defaultTone !== user?.default_tone;
 
   return (
-    <div className="space-y-8 max-w-4xl animate-fade-in">
+    <div className="space-y-6 sm:space-y-8 max-w-4xl animate-fade-in px-4 sm:px-0">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
+        <p className="text-sm sm:text-base text-gray-600">
           Manage your account preferences and notification channels
         </p>
       </div>
@@ -50,11 +50,11 @@ export default function SettingsPage() {
       <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-shadow">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center">
-              <Bell className="h-5 w-5" />
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div>
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-lg sm:text-xl font-semibold text-gray-900">
                 Notification Channels
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">
@@ -65,27 +65,27 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           {/* Email */}
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <Label className="text-base font-medium text-gray-900">Email</Label>
-              <p className="text-sm text-gray-600 mt-0.5">{user?.email}</p>
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 xs:gap-0">
+            <div className="flex-1 min-w-0">
+              <Label className="text-sm sm:text-base font-medium text-gray-900">Email</Label>
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 truncate break-all">{user?.email}</p>
             </div>
-            <Badge className="bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
+            <Badge className="self-start xs:self-auto bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
               <Check className="h-3 w-3 mr-1" />
               Verified
             </Badge>
           </div>
 
           {/* Telegram */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-            <div className="flex-1">
-              <Label className="text-base font-medium text-gray-900">Telegram</Label>
-              <p className="text-sm text-gray-600 mt-0.5">
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-0 pt-6 border-t border-gray-100">
+            <div className="flex-1 min-w-0">
+              <Label className="text-sm sm:text-base font-medium text-gray-900">Telegram</Label>
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 break-words">
                 {hasTelegram ? `@${user?.telegram_username || 'Connected'}` : 'Connect to receive reminders via Telegram'}
               </p>
             </div>
             {hasTelegram ? (
-              <Badge className="bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
+              <Badge className="self-start xs:self-auto bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
                 <Check className="h-3 w-3 mr-1" />
                 Connected
               </Badge>
@@ -93,7 +93,7 @@ export default function SettingsPage() {
               <Button
                 onClick={() => setShowTelegramModal(true)}
                 size="sm"
-                className="bg-primary-500 hover:bg-primary-600 text-white h-9 shadow-sm"
+                className="bg-primary-500 hover:bg-primary-600 text-white min-h-[44px] h-11 sm:h-9 shadow-sm w-full xs:w-auto"
               >
                 Connect
               </Button>
@@ -106,11 +106,11 @@ export default function SettingsPage() {
       <Card className="border-gray-200 shadow-soft hover:shadow-medium transition-shadow">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-transparent">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-info-100 text-info-700 flex items-center justify-center">
-              <SettingsIcon className="h-5 w-5" />
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-info-100 text-info-700 flex items-center justify-center">
+              <SettingsIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div>
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-lg sm:text-xl font-semibold text-gray-900">
                 Preferences
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">
@@ -122,10 +122,10 @@ export default function SettingsPage() {
         <CardContent className="pt-6 space-y-6">
           {/* Timezone */}
           <div className="space-y-2">
-            <Label htmlFor="timezone" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="timezone" className="text-xs sm:text-sm font-medium text-gray-700">
               Timezone
             </Label>
-            <p className="text-xs text-gray-500 mb-2">
+            <p className="text-xs text-gray-500 mb-2 leading-relaxed">
               All reminders will be scheduled according to this timezone
             </p>
             <Select value={timezone} onValueChange={setTimezone}>
@@ -144,10 +144,10 @@ export default function SettingsPage() {
 
           {/* Default Tone */}
           <div className="space-y-2">
-            <Label htmlFor="default-tone" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="default-tone" className="text-xs sm:text-sm font-medium text-gray-700">
               Default Message Tone
             </Label>
-            <p className="text-xs text-gray-500 mb-2">
+            <p className="text-xs text-gray-500 mb-2 leading-relaxed">
               Choose the tone for AI-generated reminder messages
             </p>
             <Select value={defaultTone} onValueChange={(v) => setDefaultTone(v as any)}>
@@ -170,7 +170,7 @@ export default function SettingsPage() {
                 onClick={handleSave}
                 disabled={updateUserMutation.isPending}
                 loading={updateUserMutation.isPending}
-                className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white h-11 px-8 shadow-sm"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white min-h-[44px] h-11 px-6 sm:px-8 shadow-sm"
               >
                 {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>

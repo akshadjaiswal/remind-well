@@ -21,6 +21,7 @@ import { reminderSchema } from '@/lib/validations';
 import { useCreateReminder } from '@/hooks/use-reminders';
 import { useUpdateUser, useUser } from '@/hooks/use-user';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ReminderStepProps {
   onComplete: () => void;
@@ -33,6 +34,7 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
   const createReminder = useCreateReminder();
   const updateUser = useUpdateUser();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [emoji, setEmoji] = useState('💧');
   const [frequencyValue, setFrequencyValue] = useState('60');
@@ -102,6 +104,9 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
 
       // Mark onboarding as complete
       await updateUser.mutateAsync({ onboarding_completed: true });
+
+      // Wait for cache to sync before navigation
+      await queryClient.refetchQueries({ queryKey: ['user'] });
 
       toast({
         title: 'Reminder Created!',

@@ -84,18 +84,18 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to RemindWell! 🎉</h1>
-          <p className="mt-2 text-sm text-gray-600">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome to RemindWell! 🎉</h1>
+          <p className="mt-2 text-xs sm:text-sm text-gray-600">
             Let's get you set up in just a few steps
           </p>
         </div>
 
         {/* Stepper */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <Stepper
             steps={STEPS}
             currentStep={currentStep}
@@ -104,7 +104,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
           {currentStep === 1 && (
             <TelegramStep
               onNext={handleNext}
@@ -136,8 +136,8 @@ export default function OnboardingPage() {
         </div>
 
         {/* Progress Indicator */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+        <div className="mt-4 sm:mt-6 text-center">
+          <p className="text-xs sm:text-sm text-gray-600">
             Step {currentStep} of {STEPS.length}
           </p>
         </div>

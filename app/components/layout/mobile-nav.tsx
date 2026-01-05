@@ -107,7 +107,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       {/* Drawer */}
       <div
         className={cn(
-          'fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white shadow-large transform transition-transform duration-300 ease-out lg:hidden',
+          'fixed top-0 left-0 h-full w-80 max-w-[min(85vw,320px)] bg-white shadow-large transform transition-transform duration-300 ease-out lg:hidden',
           isOpen ? 'translate-x-0 z-mobile-nav' : '-translate-x-full z-0'
         )}
         role="dialog"
@@ -136,7 +136,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-gray-900 truncate break-all leading-tight">
                   {user.email}
                 </p>
                 <p className="text-xs text-gray-500">

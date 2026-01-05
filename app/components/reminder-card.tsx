@@ -75,12 +75,12 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="text-4xl flex-shrink-0">{reminder.emoji}</div>
+            <div className="text-3xl sm:text-4xl flex-shrink-0">{reminder.emoji}</div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg text-gray-900 truncate">
+              <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">
                 {reminder.title}
               </h3>
-              <p className="text-sm text-gray-500 mt-0.5">{frequencyDisplay}</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 truncate">{frequencyDisplay}</p>
             </div>
           </div>
           <Button
@@ -89,7 +89,7 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
             onClick={handleToggle}
             disabled={toggleMutation.isPending || isOneTime}
             className={cn(
-              "flex items-center gap-2 flex-shrink-0",
+              "flex items-center gap-1.5 sm:gap-2 flex-shrink-0 h-9 sm:h-10 min-h-[44px] px-3 sm:px-4 text-xs sm:text-sm",
               reminder.is_paused && "border-primary-300 text-primary-700 hover:bg-primary-50",
               isOneTime && "cursor-not-allowed"
             )}
@@ -115,9 +115,9 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
           <Badge variant={isOneTime ? "default" : "secondary"} className="text-xs font-medium">
             {isOneTime ? 'One-Time' : 'Recurring'}
           </Badge>
-          <Badge variant="secondary" className="text-xs font-medium">
+          <Badge variant="secondary" className="text-xs font-medium flex items-center gap-1">
             {getMethodIcon()}
-            <span className="ml-1">
+            <span className="ml-0.5 sm:ml-1 truncate max-w-[80px] sm:max-w-none">
               {reminder.notification_method === 'both'
                 ? 'Both'
                 : reminder.notification_method === 'telegram'
@@ -125,7 +125,7 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
                 : 'Email'}
             </span>
           </Badge>
-          <Badge variant="secondary" className="text-xs font-medium capitalize">
+          <Badge variant="secondary" className="text-xs font-medium capitalize truncate">
             {reminder.message_tone}
           </Badge>
           {!isOneTime && reminder.skip_weekends && (
@@ -149,18 +149,18 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
             variant="ghost"
             size="sm"
             onClick={handleEdit}
-            className="flex-1 h-9"
+            className="flex-1 min-h-[44px] h-10 sm:h-9 text-xs sm:text-sm"
           >
-            <Pencil className="h-4 w-4 mr-1.5" />
-            Edit
+            <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
+            <span className="hidden xs:inline">Edit</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleDelete}
-            className="text-error-600 hover:text-error-700 hover:bg-error-50 h-9"
+            className="text-error-600 hover:text-error-700 hover:bg-error-50 min-h-[44px] h-10 sm:h-9 min-w-[44px] px-3 sm:px-4"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </div>

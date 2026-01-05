@@ -34,13 +34,13 @@ export function DeleteConfirmationModal() {
 
   return (
     <Dialog open={isDeleteModalOpen} onOpenChange={closeDeleteModal}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[425px]">
         <DialogHeader>
           {/* Warning Icon */}
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-error-100 mb-4 animate-pulse-soft">
-            <AlertTriangle className="h-7 w-7 text-error-600" />
+          <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-error-100 mb-3 sm:mb-4 animate-pulse-soft">
+            <AlertTriangle className="h-6 w-6 sm:h-7 sm:w-7 text-error-600" />
           </div>
-          <DialogTitle className="text-center text-xl font-semibold">
+          <DialogTitle className="text-center text-lg sm:text-xl font-semibold">
             Delete Reminder?
           </DialogTitle>
           <DialogDescription className="text-center text-gray-600 leading-relaxed">
@@ -52,7 +52,7 @@ export function DeleteConfirmationModal() {
             variant="outline"
             onClick={closeDeleteModal}
             disabled={deleteMutation.isPending}
-            className="flex-1 sm:flex-initial sm:min-w-[120px] h-11"
+            className="flex-1 sm:flex-initial sm:min-w-[120px] min-h-[44px] h-11"
           >
             Cancel
           </Button>
@@ -61,7 +61,7 @@ export function DeleteConfirmationModal() {
             onClick={handleConfirm}
             disabled={deleteMutation.isPending}
             loading={deleteMutation.isPending}
-            className="flex-1 sm:flex-initial sm:min-w-[120px] h-11 bg-error-600 hover:bg-error-700"
+            className="flex-1 sm:flex-initial sm:min-w-[120px] min-h-[44px] h-11 bg-error-600 hover:bg-error-700"
           >
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Reminder'}
           </Button>

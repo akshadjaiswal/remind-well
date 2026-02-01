@@ -49,7 +49,7 @@
 
 #### Multi-Channel Delivery
 - **Telegram**: Instant bot messages to your mobile device
-- **Email**: Beautifully formatted HTML emails via Resend
+- **Email**: Beautifully formatted HTML emails via Resend. (testing)
 - **Both**: Redundant delivery for critical reminders
 
 #### Flexible Scheduling

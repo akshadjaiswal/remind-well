@@ -43,7 +43,6 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
   const [scheduledFor, setScheduledFor] = useState('');
 
   const hasTelegram = !!user?.telegram_chat_id;
-  const defaultMethod = hasTelegram ? 'both' : 'email';
 
   const {
     register,
@@ -54,7 +53,7 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
   } = useForm<{ title: string; notification_method: string }>({
     defaultValues: {
       title: '',
-      notification_method: defaultMethod,
+      notification_method: 'telegram',
     },
   });
 
@@ -294,26 +293,17 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
             <Select
               value={notificationMethod}
               onValueChange={(v) => setValue('notification_method', v)}
-              disabled={!hasTelegram}
             >
               <SelectTrigger id="notification-method" className="h-11">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="email">Email Only</SelectItem>
-                {hasTelegram && (
-                  <>
-                    <SelectItem value="telegram">Telegram Only</SelectItem>
-                    <SelectItem value="both">Telegram & Email</SelectItem>
-                  </>
-                )}
+                <SelectItem value="telegram">Telegram</SelectItem>
               </SelectContent>
             </Select>
-            {!hasTelegram && (
-              <p className="text-xs text-gray-500">
-                Connect Telegram from Settings to enable Telegram notifications
-              </p>
-            )}
+            <p className="text-xs text-gray-500">
+              Reminders are delivered via Telegram instant messaging
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -342,7 +332,7 @@ export function ReminderStep({ onComplete, onBack, onSkip }: ReminderStepProps) 
         </Button>
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !hasTelegram}
           className="sm:flex-1"
           size="lg"
         >

@@ -174,7 +174,7 @@ export default function AuthPage() {
 
           {/* Footer Note */}
           <p className="text-xs text-gray-500 text-center mt-8 leading-relaxed">
-            By continuing, you agree to receive reminder notifications via email and Telegram
+            By continuing, you agree to receive reminder notifications via Telegram
           </p>
         </div>
 

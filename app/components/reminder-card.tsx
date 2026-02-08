@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Pencil, Trash2, Clock, Mail, MessageSquare, Pause, Play, Calendar } from 'lucide-react';
+import { Pencil, Trash2, Clock, MessageSquare, Pause, Play, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -34,18 +34,7 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
   };
 
   const getMethodIcon = () => {
-    if (reminder.notification_method === 'both') {
-      return (
-        <div className="flex items-center gap-1">
-          <MessageSquare className="h-3.5 w-3.5" />
-          <Mail className="h-3.5 w-3.5" />
-        </div>
-      );
-    }
-    if (reminder.notification_method === 'telegram') {
-      return <MessageSquare className="h-3.5 w-3.5" />;
-    }
-    return <Mail className="h-3.5 w-3.5" />;
+    return <MessageSquare className="h-3.5 w-3.5" />;
   };
 
   const nextScheduledText = reminder.reminder_type === 'one_time' && reminder.scheduled_for
@@ -118,11 +107,7 @@ export function ReminderCard({ reminder }: ReminderCardProps) {
           <Badge variant="secondary" className="text-xs font-medium flex items-center gap-1">
             {getMethodIcon()}
             <span className="ml-0.5 sm:ml-1 truncate max-w-[80px] sm:max-w-none">
-              {reminder.notification_method === 'both'
-                ? 'Both'
-                : reminder.notification_method === 'telegram'
-                ? 'Telegram'
-                : 'Email'}
+              Telegram
             </span>
           </Badge>
           <Badge variant="secondary" className="text-xs font-medium capitalize truncate">

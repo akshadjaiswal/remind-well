@@ -7,8 +7,8 @@ import { MIN_INTERVAL_MINUTES } from './constants';
 const baseReminderSchema = {
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   emoji: z.string().max(10).optional().default('🔔'),
-  notification_method: z.enum(['telegram', 'email', 'both'], {
-    errorMap: () => ({ message: 'Invalid notification method' })
+  notification_method: z.literal('telegram', {
+    errorMap: () => ({ message: 'Only Telegram notifications are supported' })
   }),
   message_tone: z.enum(['motivational', 'friendly', 'direct', 'funny']).optional().default('friendly')
 };

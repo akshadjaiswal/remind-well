@@ -55,29 +55,17 @@ export default function SettingsPage() {
             </div>
             <div>
               <CardTitle className="text-lg sm:text-xl font-semibold text-gray-900">
-                Notification Channels
+                Telegram Connection
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">
-                Connect your preferred notification methods
+                Connect Telegram to receive notifications
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          {/* Email */}
-          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 xs:gap-0">
-            <div className="flex-1 min-w-0">
-              <Label className="text-sm sm:text-base font-medium text-gray-900">Email</Label>
-              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 truncate break-all">{user?.email}</p>
-            </div>
-            <Badge className="self-start xs:self-auto bg-success-50 text-success-700 border border-success-200 hover:bg-success-100 transition-colors">
-              <Check className="h-3 w-3 mr-1" />
-              Verified
-            </Badge>
-          </div>
-
           {/* Telegram */}
-          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-0 pt-6 border-t border-gray-100">
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-0">
             <div className="flex-1 min-w-0">
               <Label className="text-sm sm:text-base font-medium text-gray-900">Telegram</Label>
               <p className="text-xs sm:text-sm text-gray-600 mt-0.5 break-words">

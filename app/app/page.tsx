@@ -44,7 +44,7 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              Smart reminders for water, breaks, and healthy habits. Delivered to Telegram or email with AI-powered messages.
+              Smart reminders for water, breaks, and healthy habits. Delivered instantly to Telegram with AI-powered messages.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -143,10 +143,10 @@ export default function LandingPage() {
                 <Bell className="h-7 w-7" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Telegram & Email
+                Telegram Notifications
               </h3>
               <p className="text-sm text-gray-600">
-                Get reminders where you are, on your preferred platform
+                Instant reminders delivered directly to your Telegram
               </p>
             </div>
             <div className="group bg-white p-6 rounded-2xl border border-gray-200 hover:border-warning-300 hover:shadow-lg transition-all duration-300">

@@ -2,7 +2,7 @@
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)  [![React 19](https://img.shields.io/badge/React-19-149ECA?style=flat&logo=react&logoColor=white)](https://react.dev/)  [![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)  [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)  [![Groq AI](https://img.shields.io/badge/Groq_AI-000000?style=flat&logo=anthropic&logoColor=white)](https://groq.com/)  [![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)](https://vercel.com/)  [![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
 
-**RemindWell** is an AI-powered reminder and habit tracking application that helps you build healthier routines through smart, contextual notifications delivered via Telegram or email. Perfect for staying hydrated, taking breaks, stretching, and maintaining wellness habits.
+**RemindWell** is an AI-powered reminder and habit tracking application that helps you build healthier routines through smart, contextual notifications delivered via Telegram. Perfect for staying hydrated, taking breaks, stretching, and maintaining wellness habits.
 
 > Build better habits, one reminder at a time. 💧
 
@@ -13,7 +13,7 @@
 - **One-Time Reminders** (NEW) – Schedule reminders for specific date/time that auto-archive after sending
 - **Free-Tier Deployment** – Runs on Vercel Hobby tier with Supabase pg_cron (no paid plan required)
 - **AI-Powered Messages** – Groq LLaMA 3.3 70B generates unique, contextual reminders (no more boring "drink water")
-- **Multi-Channel Delivery** – Send reminders via Telegram, email, or both simultaneously
+- **Telegram Delivery** – Instant reminders delivered directly to your Telegram
 - **Smart Scheduling** – Timezone-aware with active hours control and weekend skip options
 - **Dashboard & Stats** – Track active reminders, paused habits, and daily notification counts
 
@@ -38,7 +38,7 @@
 
 #### Smart Reminders Features
 - Create custom reminders with emojis and personalized titles
-- Choose notification method: Telegram, Email, or Both
+- Telegram instant messaging delivery
 - Mark reminders inactive when no longer needed
 
 #### AI Message Generation
@@ -47,10 +47,10 @@
 - Contextual messages that consider time since last reminder
 - Automatic fallback to title + emoji if AI service is unavailable
 
-#### Multi-Channel Delivery
-- **Telegram**: Instant bot messages to your mobile device
-- **Email**: Beautifully formatted HTML emails via Resend. (testing)
-- **Both**: Redundant delivery for critical reminders
+#### Telegram Notifications
+- **Instant Delivery**: Bot messages sent directly to your mobile device
+- **Always Available**: Telegram notifications work 24/7
+- **Reliable**: Direct communication via Telegram Bot API
 
 #### Flexible Scheduling
 - **Timezone Support**: All reminders respect your local timezone

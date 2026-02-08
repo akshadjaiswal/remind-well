@@ -1,7 +1,7 @@
 // Database types matching exact Supabase schema
 
 export type MessageTone = 'motivational' | 'friendly' | 'direct' | 'funny';
-export type NotificationMethod = 'telegram' | 'email' | 'both';
+export type NotificationMethod = 'telegram';
 export type NotificationStatus = 'pending' | 'sent' | 'failed';
 export type ReminderType = 'recurring' | 'one_time';
 
@@ -47,7 +47,7 @@ export interface DbNotification {
   reminder_id: string;
   user_id: string;
   message: string;
-  method: 'telegram' | 'email';
+  method: 'telegram';
   status: NotificationStatus;
   sent_at: string | null;
   error_message: string | null;

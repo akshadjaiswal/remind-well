@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { Info, Bell, Calendar, Clock } from 'lucide-react';
+import { Info, Bell, Calendar, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +22,7 @@ import { TimePicker } from './time-picker';
 import { reminderSchema } from '@/lib/validations';
 import { MIN_INTERVAL_MINUTES } from '@/lib/constants';
 import { useCreateReminder, useUpdateReminder } from '@/hooks/use-reminders';
+import { useUser } from '@/hooks/use-user';
 import type { Reminder } from '@/types/models';
 import type { CreateReminderRequest } from '@/types/api.types';
 
@@ -34,6 +35,7 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
   const router = useRouter();
   const createMutation = useCreateReminder();
   const updateMutation = useUpdateReminder();
+  const { data: user } = useUser();
 
   const [reminderType, setReminderType] = useState<'recurring' | 'one_time'>(
     reminder?.reminder_type || 'recurring'
@@ -50,7 +52,7 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
   const [frequencyUnit, setFrequencyUnit] = useState<'minutes' | 'hours'>(
     reminder && reminder.interval_minutes && reminder.interval_minutes >= 60 ? 'hours' : 'minutes'
   );
-  const [notificationMethod, setNotificationMethod] = useState(reminder?.notification_method || 'both');
+  const [notificationMethod, setNotificationMethod] = useState(reminder?.notification_method || 'telegram');
   const [messageTone, setMessageTone] = useState(reminder?.message_tone || 'friendly');
   const [activeHoursStart, setActiveHoursStart] = useState(reminder?.active_hours_start || '');
   const [activeHoursEnd, setActiveHoursEnd] = useState(reminder?.active_hours_end || '');
@@ -114,9 +116,29 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
 
   const isPending = createMutation.isPending || updateMutation.isPending;
   const mutation = mode === 'create' ? createMutation : updateMutation;
+  const hasTelegram = user?.telegram_chat_id;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto">
+      {/* Telegram Connection Warning */}
+      {!hasTelegram && (
+        <Card className="border-warning-200 bg-warning-50">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-warning-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-warning-900">Telegram connection required</p>
+                <p className="text-xs text-warning-700 mt-1">
+                  You must connect your Telegram account before creating reminders.{' '}
+                  <a href="/dashboard/settings" className="underline font-medium hover:text-warning-900">
+                    Go to Settings
+                  </a>
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {/* Visual Progress Steps */}
       <div className="mb-8 flex items-center justify-between max-w-2xl mx-auto px-4">
         <div className="flex items-center gap-2">
@@ -301,11 +323,10 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="telegram">Telegram Only</SelectItem>
-                <SelectItem value="email">Email Only</SelectItem>
-                <SelectItem value="both">Telegram & Email</SelectItem>
+                <SelectItem value="telegram">Telegram</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-gray-500">Reminders are delivered via Telegram instant messaging</p>
           </div>
 
           <div className="space-y-2">
@@ -395,9 +416,9 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
         </Button>
         <Button
           type="submit"
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || !hasTelegram}
           loading={mutation.isPending}
-          className="flex-1 sm:flex-initial sm:min-w-[140px] h-11 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-sm"
+          className="flex-1 sm:flex-initial sm:min-w-[140px] h-11 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {mutation.isPending ? (mode === 'create' ? 'Creating...' : 'Updating...') : (mode === 'create' ? 'Create Reminder' : 'Update Reminder')}
         </Button>

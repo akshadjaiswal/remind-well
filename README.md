@@ -126,7 +126,7 @@
 ### Architecture
 - **Next.js 16 App Router** with React 19 and TypeScript
 - **Serverless API Routes** for all backend operations
-- **EasyCron Integration** for free-tier minute-level cron jobs
+- **Supabase Cron Integration** for minute-level cron jobs
 - **Row-Level Security** ensures users only see their own data
 - **Optimistic Updates** for instant UI feedback
 

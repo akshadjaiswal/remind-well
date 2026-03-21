@@ -1,4 +1,4 @@
-// External service types (Telegram, Resend, Groq)
+// External service types (Telegram, Groq)
 
 // ========================================
 // Telegram API Types
@@ -38,21 +38,6 @@ export interface TelegramSendMessageResponse {
     date: number;
     text: string;
   };
-}
-
-// ========================================
-// Resend API Types
-// ========================================
-
-export interface ResendSendEmailRequest {
-  from: string;
-  to: string[];
-  subject: string;
-  html: string;
-}
-
-export interface ResendSendEmailResponse {
-  id: string;
 }
 
 // ========================================

@@ -1,11 +1,10 @@
 // TEST API: GET /api/test/send-reminder?reminderId=<uuid>
-// Development-only endpoint to test email/telegram sending without waiting for cron schedule
+// Development-only endpoint to test Telegram sending without waiting for cron schedule
 
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { generateReminderMessage } from '@/lib/external/groq';
 import { sendTelegramMessage } from '@/lib/external/telegram';
-import { sendEmail } from '@/lib/external/resend';
 import { calculateHoursSince } from '@/lib/scheduling';
 
 // Use service role key to bypass RLS
@@ -73,18 +72,13 @@ export async function GET(request: Request) {
       message = `${reminder.emoji} ${reminder.title}`;
     }
 
-    // Determine notification methods
-    const methods = reminder.notification_method === 'both'
-      ? ['telegram', 'email']
-      : [reminder.notification_method];
-
     const results: any = {
       success: true,
       reminder: {
         id: reminder.id,
         title: reminder.title,
         emoji: reminder.emoji,
-        notification_method: reminder.notification_method
+        notification_method: 'telegram'
       },
       user: {
         email: user.email,
@@ -95,50 +89,33 @@ export async function GET(request: Request) {
       notifications: []
     };
 
-    // Send notifications
-    for (const method of methods) {
-      try {
-        let result = null;
-
-        if (method === 'telegram') {
-          if (!user.telegram_chat_id) {
-            results.notifications.push({
-              method: 'telegram',
-              status: 'skipped',
-              reason: 'User has not connected Telegram account'
-            });
-            continue;
-          }
-
-          result = await sendTelegramMessage(user.telegram_chat_id, `${reminder.emoji} ${message}`);
-          console.log(`[TEST] Sent Telegram message to ${user.telegram_chat_id}`);
-
-          results.notifications.push({
-            method: 'telegram',
-            status: 'sent',
-            chat_id: user.telegram_chat_id,
-            message_id: result.message_id
-          });
-        } else if (method === 'email') {
-          result = await sendEmail(user.email, `${reminder.emoji} ${reminder.title}`, message);
-          console.log(`[TEST] Sent email to ${user.email}`);
-
-          results.notifications.push({
-            method: 'email',
-            status: 'sent',
-            to: user.email,
-            email_id: result.id
-          });
-        }
-      } catch (error: any) {
-        console.error(`[TEST] Failed to send ${method}:`, error.message);
+    // Send Telegram notification
+    try {
+      if (!user.telegram_chat_id) {
+        results.notifications.push({
+          method: 'telegram',
+          status: 'skipped',
+          reason: 'User has not connected Telegram account'
+        });
+      } else {
+        const result = await sendTelegramMessage(user.telegram_chat_id, `${reminder.emoji} ${message}`);
+        console.log(`[TEST] Sent Telegram message to ${user.telegram_chat_id}`);
 
         results.notifications.push({
-          method,
-          status: 'failed',
-          error: error.message
+          method: 'telegram',
+          status: 'sent',
+          chat_id: user.telegram_chat_id,
+          message_id: result.message_id
         });
       }
+    } catch (error: any) {
+      console.error(`[TEST] Failed to send Telegram:`, error.message);
+
+      results.notifications.push({
+        method: 'telegram',
+        status: 'failed',
+        error: error.message
+      });
     }
 
     results.sentAt = new Date().toISOString();

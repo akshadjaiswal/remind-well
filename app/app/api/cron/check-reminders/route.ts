@@ -5,7 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { generateReminderMessage } from '@/lib/external/groq';
 import { sendTelegramMessage } from '@/lib/external/telegram';
-import { sendEmail } from '@/lib/external/resend';
 import { calculateNextScheduledAt, isWithinActiveHours, calculateHoursSince } from '@/lib/scheduling';
 import { isWeekend } from 'date-fns';
 import { retryWithBackoff } from '@/lib/retry';
@@ -123,58 +122,47 @@ async function handleCronJob(request: Request) {
           message = `${reminder.emoji} ${reminder.title}`;
         }
 
-        // Determine notification methods
-        const methods = reminder.notification_method === 'both'
-          ? ['telegram', 'email']
-          : [reminder.notification_method];
+        // Send Telegram notification (only method supported)
+        try {
+          let externalId = null;
 
-        // Send notifications
-        for (const method of methods) {
-          try {
-            let externalId = null;
+          if (user.telegram_chat_id) {
+            const result = await retryWithBackoff(() =>
+              sendTelegramMessage(user.telegram_chat_id, `${reminder.emoji} ${message}`)
+            );
+            externalId = result.message_id?.toString();
 
-            if (method === 'telegram' && user.telegram_chat_id) {
-              const result = await retryWithBackoff(() =>
-                sendTelegramMessage(user.telegram_chat_id, `${reminder.emoji} ${message}`)
-              );
-              externalId = result.message_id?.toString();
-
-              console.log(`[CRON] Sent Telegram to ${user.telegram_chat_id} for ${reminder.id}`);
-            } else if (method === 'email') {
-              const result = await retryWithBackoff(() =>
-                sendEmail(user.email, `${reminder.emoji} ${reminder.title}`, message)
-              );
-              externalId = result.id;
-
-              console.log(`[CRON] Sent email to ${user.email} for ${reminder.id}`);
-            }
+            console.log(`[CRON] Sent Telegram to ${user.telegram_chat_id} for ${reminder.id}`);
 
             // Log successful notification
             await supabase.from('rw_notifications').insert({
               reminder_id: reminder.id,
               user_id: user.id,
               message,
-              method,
+              method: 'telegram',
               status: 'sent',
               sent_at: now.toISOString(),
               external_id: externalId
             });
-          } catch (error: any) {
-            console.error(`[CRON] Failed to send ${method} for ${reminder.id}:`, error.message);
-
-            // Log failed notification
-            await supabase.from('rw_notifications').insert({
-              reminder_id: reminder.id,
-              user_id: user.id,
-              message,
-              method,
-              status: 'failed',
-              error_message: error.message,
-              retry_count: 3
-            });
-
-            failedCount++;
+          } else {
+            console.warn(`[CRON] No Telegram chat ID for user ${user.id}, skipping reminder ${reminder.id}`);
+            continue;
           }
+        } catch (error: any) {
+          console.error(`[CRON] Failed to send Telegram for ${reminder.id}:`, error.message);
+
+          // Log failed notification
+          await supabase.from('rw_notifications').insert({
+            reminder_id: reminder.id,
+            user_id: user.id,
+            message,
+            method: 'telegram',
+            status: 'failed',
+            error_message: error.message,
+            retry_count: 3
+          });
+
+          failedCount++;
         }
 
         // Post-send: Archive one-time reminders, recalculate next time for recurring

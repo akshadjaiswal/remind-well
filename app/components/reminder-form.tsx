@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmojiPicker } from './emoji-picker';
 import { TimePicker } from './time-picker';
 import { reminderSchema } from '@/lib/validations';
+import { toZonedTime } from 'date-fns-tz';
 import { MIN_INTERVAL_MINUTES } from '@/lib/constants';
 import { useCreateReminder, useUpdateReminder } from '@/hooks/use-reminders';
 import { useUser } from '@/hooks/use-user';
@@ -40,11 +41,17 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
   const [reminderType, setReminderType] = useState<'recurring' | 'one_time'>(
     reminder?.reminder_type || 'recurring'
   );
-  const [scheduledDateTime, setScheduledDateTime] = useState(
-    reminder?.scheduled_for
-      ? new Date(reminder.scheduled_for).toISOString().slice(0, 16)
-      : ''
-  );
+  const [scheduledDateTime, setScheduledDateTime] = useState('');
+
+  // In edit mode, scheduled_for in DB is UTC. Convert to user's local timezone for the picker.
+  useEffect(() => {
+    if (reminder?.scheduled_for && user?.timezone) {
+      const localDate = toZonedTime(new Date(reminder.scheduled_for), user.timezone);
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const localStr = `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(localDate.getDate())}T${pad(localDate.getHours())}:${pad(localDate.getMinutes())}`;
+      setScheduledDateTime(localStr);
+    }
+  }, [reminder?.scheduled_for, user?.timezone]);
   const [emoji, setEmoji] = useState(reminder?.emoji || '🔔');
   const [frequencyValue, setFrequencyValue] = useState(
     reminder ? String(reminder.interval_minutes && reminder.interval_minutes >= 60 ? reminder.interval_minutes / 60 : reminder.interval_minutes || 30) : '30'
@@ -96,7 +103,7 @@ export function ReminderForm({ reminder, mode }: ReminderFormProps) {
         reminder_type: 'one_time' as const,
         title: data.title,
         emoji,
-        scheduled_for: new Date(scheduledDateTime).toISOString(),
+        scheduled_for: scheduledDateTime,
         notification_method: notificationMethod,
         message_tone: messageTone,
       };
